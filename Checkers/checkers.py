@@ -28,21 +28,21 @@ class Checkers:
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
         self.numberOfFields = size * size
-
-        # self.prepareBoard()
+        self.stonesPlayer1 = 0
+        self.stonesPlayer2 = 0
+        self.prepareBoard()
 
     def reset(self):
+        self.clearBoard()
         self.prepareBoard()
         state = 0
         for x in range(self.size):
             for y in range(self.size):                
                 if self.board[x,y] == 1:
                     state += pow(2, x * self.size + y)
-        return state
+        return self.getState()
 
     def prepareBoard(self):
-        self.stonesPlayer1 = 0
-        self.stonesPlayer2 = 0
         for x in range(len(self.board)):            
             for y in range(len(self.board[x])):
                 if self.validField(x, y):
@@ -55,9 +55,26 @@ class Checkers:
                     #     self.stonesPlayer1 += 1
         # print(self.board)
 
+    def clearBoard(self):
+        self.stonesPlayer1 = 0
+        self.stonesPlayer2 = 0
+        for x in range(len(self.board)):            
+            for y in range(len(self.board[x])):
+                self.board[x,y] = 0
 
     def validField(self, x, y):
         return (x + y) % 2 == 0         # ever black field (defined as even number here) is a valid field
+
+    def getState(self):
+        new_state = 0
+        for x in range(self.size):
+            for y in range(self.size):
+                if self.validField(x, y):
+                    if self.board[x,y] == 1:
+                        x = x // 2
+                        y = y // 2
+                        new_state += pow(2, x * self.size + y)
+        return new_state
 
     def arrayPosition(self, x, y):
         return x * len(self.board) + y
@@ -96,8 +113,8 @@ class Checkers:
         possibleActions = pow(self.numberOfFields, 2)
         return possibleActions
 
-    def action_space_sample(self):        
-        randomStone = random.randint(0, self.stonesPlayer1-1)     
+    def action_space_sample(self):
+        randomStone = random.randint(0, self.stonesPlayer1-1)
         randomField = random.randint(0, self.numberOfFields-1)
         return randomStone * self.numberOfFields + randomField
         
@@ -108,25 +125,22 @@ class Checkers:
         destinationY = destination % self.size
         # origin = -1
 
-        new_state = 0       # evtl. binär, anhand des board-arrays berechnen
+        new_state = self.getState()
         reward = 0
         done = False
         info = "no used yet"
-
-        print(stone)
-        
         
         for x in range(self.size):
             for y in range(self.size):
                 
-                if self.board[x,y] == 1:
-                    new_state += pow(2, x * self.size + y)                    
+                # if self.board[x,y] == 1:
+                #     new_state += pow(2, x * self.size + y)
 
                 if self.board[x, y] == 1:
                     stone -= 1
                     if stone == -1:                     # find the stone on the board, which should be moved
-                        print("From: " + str(x) + "/" + str(y))
-                        print("To: " + str(destinationX) + "/" + str(destinationY))
+                        # print("From: " + str(x) + "/" + str(y))
+                        # print("To: " + str(destinationX) + "/" + str(destinationY))
                         # origin = self.arrayPosition(x, y)
                         
                         if self.moveIsValid(1, x, y, destinationX, destinationY):
@@ -137,21 +151,24 @@ class Checkers:
                             # self.board[3,1] = 1
                             # self.board[3,3] = 1
                             # destinationX = 3                        
-                            # reward = 1
+                            reward = 0.2
                             if destinationX == self.size - 1:      # stone is at the other side of the board
+                                reward = 0.5
                                 done = self.isGameWon()
+                                print("Last line!!!")
                                 if done:                           # game has been won
                                     reward = 1
                                     print("Game won")
                                     break                                
                         else:               # player lost, because of invalid move
-                            reward = -1
+                            reward = 0
                             done = True
                         break
 
+        # print(self.board)
         
         # print("new_state: " + str(new_state))
-        print(self.board)
+        
         
         # print(origin)
         # print(destination)
@@ -159,7 +176,7 @@ class Checkers:
         # print(destinationY)
         # print(action)
         # print(stone)
-        print(done)
+        # print(done)
         return new_state, reward, done, info
 
 
@@ -171,11 +188,11 @@ class Checkers:
 # print(newMatch.action_space() * newMatch.state_space())
 
 
-for episode in range(100):
-    newMatch = Checkers(4)
-    action = newMatch.action_space_sample()
-    if newMatch.step(action) == 1:
-        break
+# for episode in range(100):
+#     newMatch = Checkers(4)
+#     action = newMatch.action_space_sample()
+#     if newMatch.step(action) == 1:
+#         break
     
 
 
