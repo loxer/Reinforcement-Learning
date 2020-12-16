@@ -108,9 +108,10 @@ class Checkers:
         destinationY = destination % self.size
         # origin = -1
 
-        state = 0       # evtl. binär, anhand des board-arrays berechnen
+        new_state = 0       # evtl. binär, anhand des board-arrays berechnen
         reward = 0
         done = False
+        info = "no used yet"
 
         print(stone)
         
@@ -119,7 +120,7 @@ class Checkers:
             for y in range(self.size):
                 
                 if self.board[x,y] == 1:
-                    state += pow(2, x * self.size + y)                    
+                    new_state += pow(2, x * self.size + y)                    
 
                 if self.board[x, y] == 1:
                     stone -= 1
@@ -138,16 +139,18 @@ class Checkers:
                             # destinationX = 3                        
                             # reward = 1
                             if destinationX == self.size - 1:      # stone is at the other side of the board
-                                reward = 1
                                 done = self.isGameWon()
-                                print("Game won")
+                                if done:                           # game has been won
+                                    reward = 1
+                                    print("Game won")
+                                    break                                
                         else:               # player lost, because of invalid move
                             reward = -1
                             done = True
                         break
 
         
-        # print("state: " + str(state))
+        # print("new_state: " + str(new_state))
         print(self.board)
         
         # print(origin)
@@ -157,7 +160,7 @@ class Checkers:
         # print(action)
         # print(stone)
         print(done)
-        return reward
+        return new_state, reward, done, info
 
 
 # newMatch = Checkers(4)
