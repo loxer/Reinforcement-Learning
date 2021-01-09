@@ -151,9 +151,9 @@ class Checkers:
                             # self.board[3,1] = 1
                             # self.board[3,3] = 1
                             # destinationX = 3                        
-                            reward = 0.2
+                            reward = 0
                             if destinationX == self.size - 1:      # stone is at the other side of the board
-                                reward = 0.5
+                                reward = 0
                                 done = self.isGameWon()
                                 print("Last line!!!")
                                 if done:                           # game has been won
@@ -161,7 +161,7 @@ class Checkers:
                                     print("Game won")
                                     break                                
                         else:               # player lost, because of invalid move
-                            reward = 0
+                            reward = -1
                             done = True
                         break
 

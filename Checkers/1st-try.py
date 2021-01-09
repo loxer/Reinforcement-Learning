@@ -11,7 +11,7 @@ state_space_size = env.state_space()
 
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 1000000
+num_episodes = 100000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
