@@ -30,6 +30,10 @@ class Checkers:
         self.numberOfFields = size * size
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
+        self.REWARD_VALID_STEP = 0
+        self.REWARD_MILESTONE = 0
+        self.REWARD_WON = 1
+        self.REWARD_LOST = -1
         self.prepareBoard()
 
     def reset(self):
@@ -63,17 +67,17 @@ class Checkers:
                 self.board[x,y] = 0
 
     def validField(self, x, y):
-        return (x + y) % 2 == 0         # ever black field (defined as even number here) is a valid field
+        return (x + y) % 2 == 0         # every black field (defined as an even number here) is a valid field
 
     def getState(self):
         new_state = 0
         for x in range(self.size):
             for y in range(self.size):
-                if self.validField(x, y):
+                if self.validField(x, y):       # check only the black fields
                     if self.board[x,y] == 1:
                         x = x // 2
                         y = y // 2
-                        new_state += pow(2, x * self.size + y)
+                        new_state += pow(2, x * self.size + y)  # new state is calculated from binary-to-decimal (board array is in decimal, states are in decimal)
         return new_state
 
     def arrayPosition(self, x, y):
@@ -128,7 +132,7 @@ class Checkers:
         new_state = self.getState()
         reward = 0
         done = False
-        info = "no used yet"
+        info = "not used yet"
         
         for x in range(self.size):
             for y in range(self.size):
@@ -150,18 +154,18 @@ class Checkers:
                             # self.board[0,2] = 0
                             # self.board[3,1] = 1
                             # self.board[3,3] = 1
-                            # destinationX = 3                        
-                            reward = 0
+                            # destinationX = 3
+                            reward = self.REWARD_VALID_STEP
                             if destinationX == self.size - 1:      # stone is at the other side of the board
-                                reward = 0
+                                reward = self.REWARD_MILESTONE
                                 done = self.isGameWon()
-                                print("Last line!!!")
+                                # print("Last line!!!")
                                 if done:                           # game has been won
-                                    reward = 1
+                                    reward = self.REWARD_WON
                                     print("Game won")
                                     break                                
                         else:               # player lost, because of invalid move
-                            reward = -1
+                            reward = self.REWARD_LOST
                             done = True
                         break
 
