@@ -12,7 +12,8 @@ state_space_size = env.state_space()
 
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 100000
+# num_episodes = 100000
+num_episodes = 10000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -80,8 +81,58 @@ for r in rewards_per_thousand_episodes:
 # From here the logging starts
 VERSION, numberOfFields, stonesPlayer1, REWARD_VALID_STEP, REWARD_MILESTONE, REWARD_WON, REWARD_LOST = env.getLoggingInformation()
 
-FILEPATH = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\"
+# LOGGING_FORMAT = ("%(asctime)s;%(levelname)s;%(message)s",
+#                  "%Y-%m-%d %H:%M:%S")
 
-# logging.basicConfig(filename = )
+import time
+timestamp = time.gmtime()
+print(time.strftime("%Y-%m-%d_%H-%M-%S", timestamp))
+# 2021-01-11 22:51:04
 
 
+LOGGING_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+# print(LOGGING_FORMAT)
+# FILE = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\" + str(VERSION) + "\\" + LOGGING_FORMAT + "123.log"
+# print(FILE)
+
+# logging.basicConfig(filename = FILE,
+#                     level = logging.DEBUG,
+#                     format = LOGGING_FORMAT,
+#                     filemode = 'w')
+# logger = logging.getLogger()
+# logger.info("First msg")
+
+
+
+
+# List of values for the logs
+""" timestemp
+version_of_game
+extra_notes
+numberOfFields
+numberOfplayers
+stonesPlayer1
+action_space_size
+state_space_size
+q_table_size
+q_table (itself)
+num_episodes
+max_steps_per_episode
+learning_rate
+discount_rate
+exploration_rate
+max_exploration_rate
+min_exploration_rate
+exploration_decay_rate
+
+reward_invalid_step
+reward_valid_step
+reward_loss
+reward_win
+rewards_per_thousand_episodes
+success_rate_per_thousand_episodes
+success_rate_overall_episodes
+
+
+list at what episode the agent won
+ """
