@@ -34,6 +34,7 @@ class Checkers:
         self.REWARD_MILESTONE = 0
         self.REWARD_WON = 1
         self.REWARD_LOST = -1
+        self.VERSION = 1
         self.prepareBoard()
 
     def reset(self):
@@ -183,6 +184,11 @@ class Checkers:
         # print(done)
         return new_state, reward, done, info
 
+    def getLoggingInformation(self):
+        """
+        docstring
+        """
+        return self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST
 
 # newMatch = Checkers(4)
 # newMatch.checkMove(1, 0, 2, 1, 1)

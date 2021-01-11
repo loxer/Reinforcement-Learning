@@ -2,6 +2,7 @@ from checkers import *
 import numpy as np
 import random
 import time
+import logging
 #from IPython.display import clear_output
 
 env = Checkers(4)
@@ -72,4 +73,15 @@ print("********Average reward per thousand episodes********\n")
 for r in rewards_per_thousand_episodes:
     print(count, ": ", str(sum(r/10000)))
     count += 10000
+
+
+
+
+# From here the logging starts
+VERSION, numberOfFields, stonesPlayer1, REWARD_VALID_STEP, REWARD_MILESTONE, REWARD_WON, REWARD_LOST = env.getLoggingInformation()
+
+FILEPATH = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\"
+
+# logging.basicConfig(filename = )
+
 
