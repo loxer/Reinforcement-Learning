@@ -2,7 +2,6 @@ from checkers import *
 import numpy as np
 import random
 import time
-import logging
 #from IPython.display import clear_output
 
 env = Checkers(4)
@@ -81,24 +80,17 @@ for r in rewards_per_thousand_episodes:
 # From here the logging starts
 VERSION, numberOfFields, stonesPlayer1, REWARD_VALID_STEP, REWARD_MILESTONE, REWARD_WON, REWARD_LOST = env.getLoggingInformation()
 
-# LOGGING_FORMAT = ("%(asctime)s;%(levelname)s;%(message)s",
-#                  "%Y-%m-%d %H:%M:%S")
-
+newLine = "\n"
 
 timestamp = time.gmtime()
 timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
-LOGGING_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-print(LOGGING_FORMAT)
-FILE = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\Version_" + str(VERSION) + "\\" + timeFormat + "_123.log"
-# print(FILE)
+logMessage = timeFormat + newLine
+logMessage += str(VERSION) + newLine
 
-logging.basicConfig(filename = FILE,
-                    level = logging.NOTSET,
-                    )
-logger = logging.getLogger()
-logger.info("First msg")
-
+FILE = "Logs\\Version_" + str(VERSION) + "\\" + timeFormat + "_123.txt"
+logFile = open(FILE,"w+")
+logFile.write(logMessage)
 
 
 
