@@ -84,23 +84,20 @@ VERSION, numberOfFields, stonesPlayer1, REWARD_VALID_STEP, REWARD_MILESTONE, REW
 # LOGGING_FORMAT = ("%(asctime)s;%(levelname)s;%(message)s",
 #                  "%Y-%m-%d %H:%M:%S")
 
-import time
-timestamp = time.gmtime()
-print(time.strftime("%Y-%m-%d_%H-%M-%S", timestamp))
-# 2021-01-11 22:51:04
 
+timestamp = time.gmtime()
+timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
 LOGGING_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
-# print(LOGGING_FORMAT)
-# FILE = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\" + str(VERSION) + "\\" + LOGGING_FORMAT + "123.log"
+print(LOGGING_FORMAT)
+FILE = "C:\\Miscellaneous\\Git\\Reinforcement-Learning\\Logs\\Version_" + str(VERSION) + "\\" + timeFormat + "_123.log"
 # print(FILE)
 
-# logging.basicConfig(filename = FILE,
-#                     level = logging.DEBUG,
-#                     format = LOGGING_FORMAT,
-#                     filemode = 'w')
-# logger = logging.getLogger()
-# logger.info("First msg")
+logging.basicConfig(filename = FILE,
+                    level = logging.NOTSET,
+                    )
+logger = logging.getLogger()
+logger.info("First msg")
 
 
 
