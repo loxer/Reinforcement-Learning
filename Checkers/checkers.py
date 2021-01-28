@@ -188,7 +188,7 @@ class Checkers:
         """
         docstring
         """
-        return self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST
+        return [self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST]
 
 # newMatch = Checkers(4)
 # newMatch.checkMove(1, 0, 2, 1, 1)

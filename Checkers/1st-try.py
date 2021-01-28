@@ -1,4 +1,5 @@
 from checkers import *
+from createLog import *
 import numpy as np
 import random
 import time
@@ -18,12 +19,13 @@ max_steps_per_episode = 100
 learning_rate = 0.1
 discount_rate = 0.99
 
-exploration_rate = 1
+start_exploration_rate = exploration_rate = 1
 max_exploration_rate = 1
 min_exploration_rate = 0.0000001
 exploration_decay_rate = 0.00001
 
 rewards_all_episodes = []
+timestamp = time.gmtime()
 
 # Q-learning algorithm
 for episode in range(num_episodes):
@@ -77,47 +79,48 @@ for r in rewards_per_thousand_episodes:
 
 
 
+
 # From here the logging starts
-VERSION, numberOfFields, stonesPlayer1, REWARD_VALID_STEP, REWARD_MILESTONE, REWARD_WON, REWARD_LOST = env.getLoggingInformation()
-
-newLine = "\n"
-
-timestamp = time.gmtime()
+gameInformation = env.getLoggingInformation()
 timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
-logMessage = timeFormat + newLine
-logMessage += str(VERSION) + newLine
+simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, 
+                         discount_rate, exploration_rate, exploration_decay_rate, max_exploration_rate, min_exploration_rate, start_exploration_rate]
 
-FILE = "Logs\\Version_" + str(VERSION) + "\\" + timeFormat + "_123.txt"
+logger = CreateLog(gameInformation, simulationInformation)
+logMessage = logger.getLog()
+
+version = gameInformation[0]
+FILE = "Logs\\Version_" + str(version) + "\\" + timeFormat + "_123.txt"
 logFile = open(FILE,"w+")
 logFile.write(logMessage)
-
+print(logMessage)
 
 
 # List of values for the logs
-""" timestemp
-version_of_game
+""" timestemp           x
+version_of_game         x
 extra_notes
-numberOfFields
-numberOfplayers
-stonesPlayer1
-action_space_size
-state_space_size
-q_table_size
-q_table (itself)
-num_episodes
-max_steps_per_episode
-learning_rate
-discount_rate
-exploration_rate
-max_exploration_rate
-min_exploration_rate
-exploration_decay_rate
+numberOfFields          x
+numberOfplayers         
+stonesPlayer1           x
+action_space_size       y
+state_space_size        y
+q_table_size            w
+q_table (itself)        y
+num_episodes            y
+max_steps_per_episode   y
+learning_rate           y
+discount_rate           y
+exploration_rate        y
+max_exploration_rate    y
+min_exploration_rate    y
+exploration_decay_rate  y
 
-reward_invalid_step
-reward_valid_step
-reward_loss
-reward_win
+reward_invalid_step     x
+reward_valid_step       x
+reward_loss             x
+reward_win              x
 rewards_per_thousand_episodes
 success_rate_per_thousand_episodes
 success_rate_overall_episodes

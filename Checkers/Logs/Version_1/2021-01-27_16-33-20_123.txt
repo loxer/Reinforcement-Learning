@@ -1,0 +1,16 @@
+2021-01-27_16-33-20 || Version: 1
+
+
+--------------- GAME INFORMATION ---------------
+Number of Fields: 16 || Number of Pieces of Player: 2
+
+        REWARDS for...
+...Valid Steps: 0 || ...Milestones: 0 || ...Winning: 1 || ...Loosing: -1
+
+
+--------------- SIMULATION INFORMATION ---------------
+Action Space Size: 32 || State Space Size: 256 || Q-Table Size: 8192Number of Episodes: 10000
+Learning Rate: 0.1 || Discount Rate: 0.99
+
+        EXPLORATION...
+Rate: 1 || Decay Rate: 1e-05 || ...Maximum Rate: 1 || ...Minimum Rate: 1e-07
