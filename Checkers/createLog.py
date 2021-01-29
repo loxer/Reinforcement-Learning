@@ -33,20 +33,25 @@ class CreateLog:
         max_exploration_rate = self.simulationInformation[10]
         min_exploration_rate = self.simulationInformation[11]
         start_exploration_rate = self.simulationInformation[12]
+        notes = self.simulationInformation[13]
 
         logMessage = timeFormat + infoSeparator + "Version: " + str(version) + newLine
         logMessage += self.getHeadline("GAME INFORMATION")
         logMessage += "Number of Fields: " + str(numberOfFields) + infoSeparator + "Number of Pieces of Player: " + str(stonesPlayer1) + newLine
         logMessage += newLine +	"        REWARDS for..." + newLine + "...Valid Steps: " + str(rewardValidStep) + infoSeparator + "...Milestones: " + str(rewardMilestone)
         logMessage += infoSeparator + "...Winning: " + str(rewardWon) + infoSeparator + "...Loosing: " + str(rewardLost) + newLine
+
         logMessage += self.getHeadline("SIMULATION INFORMATION")
         logMessage += "Action Space Size: " + str(action_space_size) + infoSeparator + "State Space Size: " + str(state_space_size) + infoSeparator + "Q-Table Size: " + str(action_space_size * state_space_size) + newLine
         logMessage += "Number of Episodes: " + str(num_episodes) + newLine
         # logMessage += infoSeparator + "Maximum Steps per Episode: " + str(max_steps_per_episode) + newLine
         logMessage += "Learning Rate: " + str(learning_rate) + infoSeparator + "Discount Rate: " + str(discount_rate) + newLine
-        logMessage += newLine +	"        EXPLORATION..." + newLine + "Starting Rate: " + str(start_exploration_rate) + infoSeparator + "Decay Rate: " + str(exploration_decay_rate)
+        logMessage += newLine +	"        EXPLORATION..." + newLine + "...Starting Rate: " + str(start_exploration_rate) + infoSeparator + "...Decay Rate: " + str(exploration_decay_rate)
         logMessage += infoSeparator + "...Maximum Rate: " + str(max_exploration_rate) + infoSeparator + "...Minimum Rate: " + str(min_exploration_rate) + newLine
+        # logMessage += ["%0.2f" % min_exploration_rate]
 
-
+        if notes:
+            logMessage += self.getHeadline("EXTRA NOTES")
+            logMessage += notes
         return logMessage
 

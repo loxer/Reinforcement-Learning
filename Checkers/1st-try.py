@@ -5,14 +5,13 @@ import random
 import time
 #from IPython.display import clear_output
 
-env = Checkers(4)
+log_notes = ""
 
+env = Checkers(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
-
 q_table = np.zeros((state_space_size, action_space_size))
 
-# num_episodes = 100000
 num_episodes = 10000
 max_steps_per_episode = 100
 
@@ -85,7 +84,7 @@ gameInformation = env.getLoggingInformation()
 timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
 simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, 
-                         discount_rate, exploration_rate, exploration_decay_rate, max_exploration_rate, min_exploration_rate, start_exploration_rate]
+                         discount_rate, exploration_rate, exploration_decay_rate, max_exploration_rate, min_exploration_rate, start_exploration_rate, log_notes]
 
 logger = CreateLog(gameInformation, simulationInformation)
 logMessage = logger.getLog()
@@ -100,27 +99,32 @@ print(logMessage)
 # List of values for the logs
 """ timestemp           x
 version_of_game         x
-extra_notes
+extra_notes             x
 numberOfFields          x
 numberOfplayers         
 stonesPlayer1           x
-action_space_size       y
-state_space_size        y
-q_table_size            w
+action_space_size       x
+state_space_size        x
+q_table_size            x
 q_table (itself)        y
-num_episodes            y
-max_steps_per_episode   y
-learning_rate           y
-discount_rate           y
-exploration_rate        y
-max_exploration_rate    y
-min_exploration_rate    y
-exploration_decay_rate  y
+num_episodes            x
+max_steps_per_episode   x
+learning_rate           x
+discount_rate           x
+exploration_rate        x
+max_exploration_rate    x
+min_exploration_rate    x
+exploration_decay_rate  x
 
 reward_invalid_step     x
 reward_valid_step       x
 reward_loss             x
 reward_win              x
+
+number of milestones
+number of wins
+time for process        
+
 rewards_per_thousand_episodes
 success_rate_per_thousand_episodes
 success_rate_overall_episodes
