@@ -20,8 +20,11 @@ discount_rate = 0.99
 
 start_exploration_rate = exploration_rate = 1
 max_exploration_rate = 1
-min_exploration_rate = 0.0000001
-exploration_decay_rate = 0.00001
+min_exploration_rate = log_min_exploration_rate = "0.0000001"
+exploration_decay_rate = log_exploration_decay_rate = "0.00001"
+
+min_exploration_rate = float(min_exploration_rate)
+exploration_decay_rate = float(exploration_decay_rate)
 
 rewards_all_episodes = []
 timestamp = time.gmtime()
@@ -84,7 +87,7 @@ gameInformation = env.getLoggingInformation()
 timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
 simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, 
-                         discount_rate, exploration_rate, exploration_decay_rate, max_exploration_rate, min_exploration_rate, start_exploration_rate, log_notes]
+                         discount_rate, exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes]
 
 logger = CreateLog(gameInformation, simulationInformation)
 logMessage = logger.getLog()
@@ -101,12 +104,12 @@ print(logMessage)
 version_of_game         x
 extra_notes             x
 numberOfFields          x
-numberOfplayers         
+numberOfplayers         /
 stonesPlayer1           x
 action_space_size       x
 state_space_size        x
 q_table_size            x
-q_table (itself)        y
+q_table (itself)        <-- need to safe it somewhere else
 num_episodes            x
 max_steps_per_episode   x
 learning_rate           x
@@ -121,6 +124,7 @@ reward_valid_step       x
 reward_loss             x
 reward_win              x
 
+number of milestones
 number of milestones
 number of wins
 time for process        

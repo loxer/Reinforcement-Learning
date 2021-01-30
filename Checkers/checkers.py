@@ -133,7 +133,7 @@ class Checkers:
         new_state = self.getState()
         reward = 0
         done = False
-        info = "not used yet"
+        info = [False, False, False]       # [0] => bool, valid steps; [1] => bool, reached milestone; [2] => bool, game won
         
         for x in range(self.size):
             for y in range(self.size):
@@ -157,15 +157,22 @@ class Checkers:
                             # self.board[3,3] = 1
                             # destinationX = 3
                             reward = self.REWARD_VALID_STEP
+                            info[0] = True
+
                             if destinationX == self.size - 1:      # stone is at the other side of the board
                                 reward = self.REWARD_MILESTONE
                                 done = self.isGameWon()
                                 # print("Last line!!!")
+
                                 if done:                           # game has been won
                                     reward = self.REWARD_WON
                                     print("Game won")
-                                    break                                
-                        else:               # player lost, because of invalid move
+                                    info[2] = True
+                                    break
+                                else:
+                                    info[1] = True
+
+                        else:                                       # player lost, because of invalid move
                             reward = self.REWARD_LOST
                             done = True
                         break
