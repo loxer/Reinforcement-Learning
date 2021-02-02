@@ -167,7 +167,7 @@ class Checkers:
 
                                 if done:                           # game has been won
                                     reward = self.REWARD_WON
-                                    print("Game won")
+                                    # print("Game won")
                                     info[2] = True
                                     break                                    
 
@@ -189,6 +189,9 @@ class Checkers:
         # print(stone)
         # print(done)
         return new_state, reward, done, info
+
+    def getBoard(self):
+        return self.board
 
     def getLoggingInformation(self):
         """

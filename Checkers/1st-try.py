@@ -6,14 +6,14 @@ import time
 #from IPython.display import clear_output
 
 log_notes = ""
-statistics_separation_counter = 1000
+statistics_separation_counter = 5000
 
 env = Checkers(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 10000
+num_episodes = 20000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -74,6 +74,10 @@ for episode in range(num_episodes):
         else:
             invalid_steps_current_episodes += 1
 
+        # To see the steps/board
+        if episode == (num_episodes - 1):
+            print(env.getBoard())
+
         # Check if episode finished
         if done == True:
             if info[2] == False:
@@ -94,6 +98,11 @@ for episode in range(num_episodes):
 
 
 # Preparing statistics for log
+total_valid_steps = sum(valid_steps_all_episodes)
+total_steps = total_valid_steps + sum(invalid_steps_all_episodes)
+print(total_valid_steps)
+print(total_steps)
+
 rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/statistics_separation_counter)
 valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/statistics_separation_counter)
 invalid_steps_all_episodes = np.split(np.array(invalid_steps_all_episodes),num_episodes/statistics_separation_counter)
@@ -108,7 +117,7 @@ timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: 
 
 simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                         exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
-                        statistics, statistics_separation_counter]
+                        statistics, statistics_separation_counter, total_steps, total_valid_steps]
 
 logger = CreateLog(gameInformation, simulationInformation)
 logger.getLog()
@@ -145,8 +154,8 @@ number of wins          x
 time for process        
 
 rewards_per_thousand_episodes           x
-success_rate_per_thousand_episodes
-success_rate_overall_episodes
+success_rate_per_thousand_episodes      x
+success_rate_overall_episodes           
 percentage_of_valid_steps
 percentage_of_wins
 

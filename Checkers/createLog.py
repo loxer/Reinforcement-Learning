@@ -2,13 +2,14 @@ class CreateLog:
     def __init__(self, gameInformation, simulationInformation):
         self.gameInformation = gameInformation
         self.simulationInformation = simulationInformation
+        self.success_rate_overall_valid_steps = 0
 
 
     def getHeadline(self, headline):
         return "\n\n" + "------------------------------------------- " + headline.upper() + " -------------------------------------------" + "\n"
 
 
-    def getStatistics(self, statistics, statistics_separation_counter, num_episodes, infoSeparator, newLine):
+    def getStatistics(self, statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, infoSeparator, newLine):
 
         rewards = statistics[0]
         valid_steps = statistics[1]
@@ -16,21 +17,31 @@ class CreateLog:
         milestones = statistics[3]
         wins = statistics[4]
 
+        self.success_rate_overall_valid_steps = total_valid_steps / total_steps
+
         counter = statistics_separation_counter
         logStatistics = ""
         
+        # useage of format function found here: https://www.codespeedy.com/print-floats-to-a-specific-number-of-decimal-points-in-python/
         for episode_phase in range(num_episodes // statistics_separation_counter):
-            percentage_valid_steps = " / " + ("{0:.1f}".format(sum(valid_steps[episode_phase]) / sum(invalid_steps[episode_phase]) * 100)) + " %" + infoSeparator
+            sum_valid_steps = sum(valid_steps[episode_phase])
+            sum_invalid_steps = sum(invalid_steps[episode_phase])
 
+            percentage_valid_steps = "{0:.2f}".format(sum_valid_steps / (sum_valid_steps + sum_invalid_steps) * 100) + " %" + infoSeparator
+            percentage_milestones = "{0:.2f}".format(sum(milestones[episode_phase] / statistics_separation_counter) * 100) + " %" + infoSeparator
+            percentage_wins = "{0:.3f}".format(sum(wins[episode_phase] / statistics_separation_counter) * 100) + " %" + infoSeparator
+            sum_rewards = "{0:.5f}".format(sum(rewards[episode_phase] / statistics_separation_counter))
 
             logStatistics += str(counter) + " | "
-            logStatistics += "Valid Steps: " + str(sum(valid_steps[episode_phase])) + percentage_valid_steps
-            logStatistics += "Milestones: " + str(sum(milestones[episode_phase])) + " / " + str(sum(milestones[episode_phase]/statistics_separation_counter) * 100) + " %" + infoSeparator
-            logStatistics += "Wins: " + str(sum(wins[episode_phase])) + " / " + str(sum(wins[episode_phase]/statistics_separation_counter) * 100) + " %" + infoSeparator
-            logStatistics += "Rewards: " + str(sum(rewards[episode_phase]/statistics_separation_counter))
+            logStatistics += "Valid Steps: " + percentage_valid_steps
+            logStatistics += "Milestones: " + percentage_milestones
+            logStatistics += "Wins: " + str(sum(wins[episode_phase])) + " / " + percentage_wins
+            logStatistics += "Rewards: " + sum_rewards
             logStatistics += " | " + str(counter)
             logStatistics += newLine
             counter += statistics_separation_counter
+
+        logStatistics += newLine + "Valid Steps in Total: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
 
         return logStatistics
 
@@ -69,6 +80,8 @@ class CreateLog:
         notes = self.simulationInformation[13]
         statistics = self.simulationInformation[14]
         statistics_separation_counter = self.simulationInformation[15]
+        total_steps = self.simulationInformation[16]
+        total_valid_steps = self.simulationInformation[17]
 
         logMessage = "******************************************** " + "REINFORCEMENT LEARNING AI LOGBOOK" + " ********************************************" + "\n"
         logMessage += timeFormat + infoSeparator + "Version: " + str(version) + newLine
@@ -91,7 +104,7 @@ class CreateLog:
 
 
         logMessage += self.getHeadline("STATISTICS PER " + str(statistics_separation_counter) + " EPISODES")
-        logMessage += self.getStatistics(statistics, statistics_separation_counter, num_episodes, infoSeparator, newLine)
+        logMessage += self.getStatistics(statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, infoSeparator, newLine)
 
 
         if notes:
