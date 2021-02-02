@@ -6,14 +6,14 @@ import time
 #from IPython.display import clear_output
 
 log_notes = ""
-COUNT = count = 10000            # in what steps the statistics are printed
+statistics_separation_counter = 1000
 
 env = Checkers(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 100000
+num_episodes = 10000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -28,6 +28,7 @@ min_exploration_rate = float(min_exploration_rate)
 exploration_decay_rate = float(exploration_decay_rate)
 
 rewards_all_episodes = []
+invalid_steps_all_episodes = []
 valid_steps_all_episodes = []
 milestones_all_episodes = []
 wins_of_all_episodes = []
@@ -40,6 +41,7 @@ for episode in range(num_episodes):
     done = False
     rewards_current_episode = 0
     valid_steps_current_episode = 0
+    invalid_steps_current_episodes = 0
     milestones_current_episodes = 0
  
     # initialize new episode params
@@ -69,6 +71,8 @@ for episode in range(num_episodes):
             valid_steps_current_episode += 1
             if info[1] == True:
                 milestones_current_episodes += 1
+        else:
+            invalid_steps_current_episodes += 1
 
         # Check if episode finished
         if done == True:
@@ -85,43 +89,17 @@ for episode in range(num_episodes):
     # Add current episode reward to total rewards list
     rewards_all_episodes.append(rewards_current_episode)
     valid_steps_all_episodes.append(valid_steps_current_episode)
+    invalid_steps_all_episodes.append(invalid_steps_current_episodes)
     milestones_all_episodes.append(milestones_current_episodes)
 
-rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/COUNT)
-valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/COUNT)
-milestones_all_episodes = np.split(np.array(milestones_all_episodes),num_episodes/COUNT)
-wins_of_all_episodes = np.split(np.array(wins_of_all_episodes),num_episodes/COUNT)
-# success_statistics = np.array([rewards_all_episodes, valid_steps_all_episodes, milestones_all_episodes, wins_of_all_episodes])
 
-log_reward_statistics = ""
-
-for episode_phase in range(num_episodes // COUNT):
-    rewards_all_episodes[episode_phase]
-
-    log_reward_statistics += str(count) + ": "
-    log_reward_statistics += "Rewards: " + str(sum(rewards_all_episodes[episode_phase]/COUNT)) + " || Valid Steps: " + str(sum(valid_steps_all_episodes[episode_phase]))
-    log_reward_statistics += " || Milestones: " + str(sum(milestones_all_episodes[episode_phase])) + " || Wins: " + str(sum(wins_of_all_episodes[episode_phase]))
-    log_reward_statistics += "\n"
-    count += COUNT
-
-
-# print(success_statistics[3, 1])
-
-# for test in success_statistics[3]:
-#     log_reward_statistics += str(count) + ": " + str(sum(test)) + "\n"
-#     count += COUNT
-
-# print("********Average reward per thousand episodes********\n")
-# for r in rewards_all_episodes:
-#     log_reward_statistics += str(count) + ": " + str(sum(r/COUNT)) + "\n"
-#     count += COUNT
-
-
-# for r in rewards_per_thousand_episodes:
-    # log_reward_statistics += str(count) + ": "
-    # log_reward_statistics += "Rewards: " + str(sum(r/COUNT)) + "       Valid Steps: " + str(sum(r))
-    # log_reward_statistics += "\n"
-    # count += COUNT
+# Preparing statistics for log
+rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/statistics_separation_counter)
+valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/statistics_separation_counter)
+invalid_steps_all_episodes = np.split(np.array(invalid_steps_all_episodes),num_episodes/statistics_separation_counter)
+milestones_all_episodes = np.split(np.array(milestones_all_episodes),num_episodes/statistics_separation_counter)
+wins_of_all_episodes = np.split(np.array(wins_of_all_episodes),num_episodes/statistics_separation_counter)
+statistics = np.array([rewards_all_episodes, valid_steps_all_episodes, invalid_steps_all_episodes, milestones_all_episodes, wins_of_all_episodes])
 
 
 # From here the logging starts
@@ -130,16 +108,10 @@ timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: 
 
 simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                         exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
-                        log_reward_statistics]
+                        statistics, statistics_separation_counter]
 
 logger = CreateLog(gameInformation, simulationInformation)
-logMessage = logger.getLog()
-
-version = gameInformation[0]
-FILE = "Logs\\Version_" + str(version) + "\\" + timeFormat + "_123.txt"
-logFile = open(FILE,"w+")
-logFile.write(logMessage)
-print(logMessage)
+logger.getLog()
 
 
 # List of values for the logs
@@ -167,12 +139,12 @@ reward_valid_step       x
 reward_loss             x
 reward_win              x
 
-number of milestones
-number of milestones
-number of wins
+number of milestones    x
+number of milestones    x
+number of wins          x
 time for process        
 
-rewards_per_thousand_episodes
+rewards_per_thousand_episodes           x
 success_rate_per_thousand_episodes
 success_rate_overall_episodes
 percentage_of_valid_steps
