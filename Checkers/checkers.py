@@ -157,20 +157,19 @@ class Checkers:
                             # self.board[3,3] = 1
                             # destinationX = 3
                             reward = self.REWARD_VALID_STEP
-                            info[0] = True
+                            info[0] = True                            
 
-                            if destinationX == self.size - 1:      # stone is at the other side of the board
+                            if destinationX == self.size - 1:      # stone is at the other side of the board => considered as 'milestone'
                                 reward = self.REWARD_MILESTONE
                                 done = self.isGameWon()
+                                info[1] = True
                                 # print("Last line!!!")
 
                                 if done:                           # game has been won
                                     reward = self.REWARD_WON
                                     print("Game won")
                                     info[2] = True
-                                    break
-                                else:
-                                    info[1] = True
+                                    break                                    
 
                         else:                                       # player lost, because of invalid move
                             reward = self.REWARD_LOST

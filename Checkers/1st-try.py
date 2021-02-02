@@ -6,13 +6,14 @@ import time
 #from IPython.display import clear_output
 
 log_notes = ""
+COUNT = count = 10000            # in what steps the statistics are printed
 
 env = Checkers(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 10000
+num_episodes = 100000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -27,6 +28,10 @@ min_exploration_rate = float(min_exploration_rate)
 exploration_decay_rate = float(exploration_decay_rate)
 
 rewards_all_episodes = []
+valid_steps_all_episodes = []
+milestones_all_episodes = []
+wins_of_all_episodes = []
+
 timestamp = time.gmtime()
 
 # Q-learning algorithm
@@ -34,6 +39,8 @@ for episode in range(num_episodes):
     state = env.reset()
     done = False
     rewards_current_episode = 0
+    valid_steps_current_episode = 0
+    milestones_current_episodes = 0
  
     # initialize new episode params
     for step in range(max_steps_per_episode):
@@ -55,10 +62,20 @@ for episode in range(num_episodes):
         # Set new state
         state = new_state
         
-        # Add new reward
+        # Save data for statistics
         rewards_current_episode += reward
+        
+        if info[0] == True:
+            valid_steps_current_episode += 1
+            if info[1] == True:
+                milestones_current_episodes += 1
 
-        if done == True: 
+        # Check if episode finished
+        if done == True:
+            if info[2] == False:
+                wins_of_all_episodes.append(0)
+            else:
+                wins_of_all_episodes.append(1)
             break
 
     # Exploration rate decay
@@ -67,27 +84,53 @@ for episode in range(num_episodes):
     
     # Add current episode reward to total rewards list
     rewards_all_episodes.append(rewards_current_episode)
+    valid_steps_all_episodes.append(valid_steps_current_episode)
+    milestones_all_episodes.append(milestones_current_episodes)
+
+rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/COUNT)
+valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/COUNT)
+milestones_all_episodes = np.split(np.array(milestones_all_episodes),num_episodes/COUNT)
+wins_of_all_episodes = np.split(np.array(wins_of_all_episodes),num_episodes/COUNT)
+# success_statistics = np.array([rewards_all_episodes, valid_steps_all_episodes, milestones_all_episodes, wins_of_all_episodes])
+
+log_reward_statistics = ""
+
+for episode_phase in range(num_episodes // COUNT):
+    rewards_all_episodes[episode_phase]
+
+    log_reward_statistics += str(count) + ": "
+    log_reward_statistics += "Rewards: " + str(sum(rewards_all_episodes[episode_phase]/COUNT)) + " || Valid Steps: " + str(sum(valid_steps_all_episodes[episode_phase]))
+    log_reward_statistics += " || Milestones: " + str(sum(milestones_all_episodes[episode_phase])) + " || Wins: " + str(sum(wins_of_all_episodes[episode_phase]))
+    log_reward_statistics += "\n"
+    count += COUNT
 
 
-# Calculate and print the average reward per thousand episodes
-rewards_per_thousand_episodes = np.split(np.array(rewards_all_episodes),num_episodes/10000)
-count = 10000
+# print(success_statistics[3, 1])
 
-print("********Average reward per thousand episodes********\n")
-for r in rewards_per_thousand_episodes:
-    print(count, ": ", str(sum(r/10000)))
-    count += 10000
+# for test in success_statistics[3]:
+#     log_reward_statistics += str(count) + ": " + str(sum(test)) + "\n"
+#     count += COUNT
+
+# print("********Average reward per thousand episodes********\n")
+# for r in rewards_all_episodes:
+#     log_reward_statistics += str(count) + ": " + str(sum(r/COUNT)) + "\n"
+#     count += COUNT
 
 
-
+# for r in rewards_per_thousand_episodes:
+    # log_reward_statistics += str(count) + ": "
+    # log_reward_statistics += "Rewards: " + str(sum(r/COUNT)) + "       Valid Steps: " + str(sum(r))
+    # log_reward_statistics += "\n"
+    # count += COUNT
 
 
 # From here the logging starts
 gameInformation = env.getLoggingInformation()
 timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
 
-simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, 
-                         discount_rate, exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes]
+simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
+                        exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
+                        log_reward_statistics]
 
 logger = CreateLog(gameInformation, simulationInformation)
 logMessage = logger.getLog()
@@ -132,6 +175,8 @@ time for process
 rewards_per_thousand_episodes
 success_rate_per_thousand_episodes
 success_rate_overall_episodes
+percentage_of_valid_steps
+percentage_of_wins
 
 
 list at what episode the agent won

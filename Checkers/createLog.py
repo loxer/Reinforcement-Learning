@@ -34,6 +34,7 @@ class CreateLog:
         min_exploration_rate = self.simulationInformation[11]
         start_exploration_rate = self.simulationInformation[12]
         notes = self.simulationInformation[13]
+        log_reward_statistics = self.simulationInformation[14]
 
 
         logMessage = timeFormat + infoSeparator + "Version: " + str(version) + newLine
@@ -53,6 +54,11 @@ class CreateLog:
 
         logMessage += newLine +	"        EXPLORATION..." + newLine + "...Starting Rate: " + str(start_exploration_rate) + infoSeparator + "...Maximum Rate: " + str(max_exploration_rate)
         logMessage += infoSeparator + "...Minimum Rate: " + str(min_exploration_rate) + infoSeparator + "...Decay Rate: " + str(exploration_decay_rate) + newLine        
+
+
+        logMessage += self.getHeadline("STATISTICS")
+        logMessage += log_reward_statistics
+        
 
 
         if notes:
