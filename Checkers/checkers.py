@@ -144,37 +144,37 @@ class Checkers:
                 if self.board[x, y] == 1:
                     stone -= 1
                     if stone == -1:                     # find the stone on the board, which should be moved
+                        moveIsValid = self.moveIsValid(1, x, y, destinationX, destinationY)
+
+                        self.board[x,y] = 0
+                        self.board[destinationX,destinationY] = 1
+                        
                         # print("From: " + str(x) + "/" + str(y))
                         # print("To: " + str(destinationX) + "/" + str(destinationY))
                         # origin = self.arrayPosition(x, y)
                         
-                        if self.moveIsValid(1, x, y, destinationX, destinationY):
-                            self.board[x,y] = 0
-                            self.board[destinationX,destinationY] = 1
-                            # self.board[0,0] = 0
-                            # self.board[0,2] = 0
-                            # self.board[3,1] = 1
-                            # self.board[3,3] = 1
-                            # destinationX = 3
+                        if moveIsValid:
                             reward = self.REWARD_VALID_STEP
                             info[0] = True                            
 
-                            if destinationX == self.size - 1:      # stone is at the other side of the board => considered as 'milestone'
+                            if destinationX == self.size - 1:      # piece is at the other side of the board => considered as 'milestone'
                                 reward = self.REWARD_MILESTONE
                                 done = self.isGameWon()
                                 info[1] = True
-                                # print("Last line!!!")
+                                # print("Milestone")
 
                                 if done:                           # game has been won
                                     reward = self.REWARD_WON
                                     # print("Game won")
                                     info[2] = True
-                                    break                                    
+                                    break                                                                   
 
                         else:                                       # player lost, because of invalid move
                             reward = self.REWARD_LOST
                             done = True
                         break
+
+                    
 
         # print(self.board)
         

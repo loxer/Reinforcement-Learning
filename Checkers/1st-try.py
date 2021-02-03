@@ -3,17 +3,18 @@ from createLog import *
 import numpy as np
 import random
 import time
+import timeit
 #from IPython.display import clear_output
 
 log_notes = ""
-statistics_separation_counter = 5000
+statistics_separation_counter = 50000
 
 env = Checkers(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 20000
+num_episodes = 600000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -34,6 +35,7 @@ milestones_all_episodes = []
 wins_of_all_episodes = []
 
 timestamp = time.gmtime()
+timeMeasurement = timeit.default_timer()
 
 # Q-learning algorithm
 for episode in range(num_episodes):
@@ -74,10 +76,6 @@ for episode in range(num_episodes):
         else:
             invalid_steps_current_episodes += 1
 
-        # To see the steps/board
-        if episode == (num_episodes - 1):
-            print(env.getBoard())
-
         # Check if episode finished
         if done == True:
             if info[2] == False:
@@ -98,10 +96,9 @@ for episode in range(num_episodes):
 
 
 # Preparing statistics for log
+timeMeasurement = timeit.default_timer() - timeMeasurement
 total_valid_steps = sum(valid_steps_all_episodes)
 total_steps = total_valid_steps + sum(invalid_steps_all_episodes)
-print(total_valid_steps)
-print(total_steps)
 
 rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/statistics_separation_counter)
 valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/statistics_separation_counter)
@@ -117,7 +114,7 @@ timeFormat = time.strftime("%Y-%m-%d_%H-%M-%S", timestamp) # thx to Metalshark: 
 
 simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                         exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
-                        statistics, statistics_separation_counter, total_steps, total_valid_steps]
+                        statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement]
 
 logger = CreateLog(gameInformation, simulationInformation)
 logger.getLog()
@@ -155,10 +152,10 @@ time for process
 
 rewards_per_thousand_episodes           x
 success_rate_per_thousand_episodes      x
-success_rate_overall_episodes           
-percentage_of_valid_steps
-percentage_of_wins
+success_rate_overall_episodes           x
+percentage_of_valid_steps               x
+percentage_of_wins                      x
 
 
-list at what episode the agent won
+list at what episode the agent won      x
  """
