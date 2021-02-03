@@ -1,5 +1,5 @@
-from checkers import *
-from createLog import *
+from game import *
+from logger import *
 import numpy as np
 import random
 import time
@@ -9,12 +9,12 @@ import timeit
 log_notes = ""
 statistics_separation_counter = 50000
 
-env = Checkers(4)
+env = Game(4)
 action_space_size = env.action_space()
 state_space_size = env.state_space()
 q_table = np.zeros((state_space_size, action_space_size))
 
-num_episodes = 600000
+num_episodes = 300000
 max_steps_per_episode = 100
 
 learning_rate = 0.1
@@ -116,46 +116,5 @@ simulationInformation = [timeFormat, action_space_size, state_space_size, q_tabl
                         exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
                         statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement]
 
-logger = CreateLog(gameInformation, simulationInformation)
-logger.getLog()
-
-
-# List of values for the logs
-""" timestemp           x
-version_of_game         x
-extra_notes             x
-numberOfFields          x
-numberOfplayers         /
-stonesPlayer1           x
-action_space_size       x
-state_space_size        x
-q_table_size            x
-q_table (itself)        <-- need to safe it somewhere else
-num_episodes            x
-max_steps_per_episode   x
-learning_rate           x
-discount_rate           x
-exploration_rate        x
-max_exploration_rate    x
-min_exploration_rate    x
-exploration_decay_rate  x
-
-reward_invalid_step     x
-reward_valid_step       x
-reward_loss             x
-reward_win              x
-
-number of milestones    x
-number of milestones    x
-number of wins          x
-time for process        
-
-rewards_per_thousand_episodes           x
-success_rate_per_thousand_episodes      x
-success_rate_overall_episodes           x
-percentage_of_valid_steps               x
-percentage_of_wins                      x
-
-
-list at what episode the agent won      x
- """
+logger = Logger(gameInformation, simulationInformation)
+logger.createLog()

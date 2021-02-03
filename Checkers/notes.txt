@@ -1,0 +1,16 @@
+Draughts/Checkers
+Definition:
+0 => no stone
+1 => stone of player1
+2 => queen of player1
+3 => stone of player2
+4 => queen of player2
+
+
+
+Komplett ohne Optimierung:
+Actions pro Spieler => Anzahl eigener Spielsteine * Anzahl Spielfelder
+States => Anzahl Spielfelder ^ Anzahl Möglichkeiten pro Feld (4)
+
+States bei einem Spieler und einer Figur => Anzahl Spielfelder * 2 (wegen Dame)
+States bei einem Spieler und zwei Figuren => Anzahl Spielfelder * Anzahl Figuren * 2 (wegen Dame)

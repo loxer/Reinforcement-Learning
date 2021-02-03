@@ -2,28 +2,7 @@ import numpy as np
 import random
 
 
-""" Draughts/Checkers
-Definition:
-0 => no stone
-1 => stone of player1
-2 => queen of player1
-3 => stone of player2
-4 => queen of player2
-
-
-
-"""
-
-
-# Komplett ohne Optimierung:
-# Actions pro Spieler => Anzahl eigener Spielsteine * Anzahl Spielfelder
-# States => Anzahl Spielfelder ^ Anzahl Möglichkeiten pro Feld (4)
-
-
-# States bei einem Spieler und einer Figur => Anzahl Spielfelder * 2 (wegen Dame)
-# States bei einem Spieler und zwei Figuren => Anzahl Spielfelder * Anzahl Figuren * 2 (wegen Dame)
-
-class Checkers:
+class Game:
     def __init__(self, size):
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
@@ -87,14 +66,8 @@ class Checkers:
     def moveIsValid(self, player, stoneX, stoneY, toFieldX, toFieldY):
         if player == 1:
             if stoneX + 1 == toFieldX and toFieldX < self.size and (stoneY + 1 == toFieldY or stoneY - 1 == toFieldY) and toFieldY < self.size and toFieldY >= 0 and self.board[toFieldX,toFieldY] == 0:
-                # self.board[stoneX,stoneY] = 0
-                # self.board[toFieldX,toFieldY] = 1
-                # print("correct move")
                 return True
-            else:
-                # self.board[stoneX,stoneY] = 8
-                # self.board[toFieldX,toFieldY] = 9
-                # print("not allowed move!")      
+            else:   
                 return False  
 
 
@@ -173,21 +146,6 @@ class Checkers:
                             reward = self.REWARD_LOST
                             done = True
                         break
-
-                    
-
-        # print(self.board)
-        
-        # print("new_state: " + str(new_state))
-        
-        
-        # print(origin)
-        # print(destination)
-        # print(destinationX)
-        # print(destinationY)
-        # print(action)
-        # print(stone)
-        # print(done)
         return new_state, reward, done, info
 
     def getBoard(self):
@@ -198,21 +156,4 @@ class Checkers:
         docstring
         """
         return [self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST]
-
-# newMatch = Checkers(4)
-# newMatch.checkMove(1, 0, 2, 1, 1)
-# newMatch.checkMove(1, 1, 1, 2, 0)
-
-# print(newMatch.action_space())
-# print(newMatch.action_space() * newMatch.state_space())
-
-
-# for episode in range(100):
-#     newMatch = Checkers(4)
-#     action = newMatch.action_space_sample()
-#     if newMatch.step(action) == 1:
-#         break
-    
-
-
 

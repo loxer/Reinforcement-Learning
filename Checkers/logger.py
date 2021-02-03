@@ -1,4 +1,4 @@
-class CreateLog:
+class Logger:
     def __init__(self, gameInformation, simulationInformation):
         self.gameInformation = gameInformation
         self.simulationInformation = simulationInformation
@@ -67,7 +67,7 @@ class CreateLog:
         logFile.write(logMessage)
 
 
-    def getLog(self):        
+    def createLog(self):        
         version = self.gameInformation[0]
         numberOfFields = self.gameInformation[1]
         stonesPlayer1 = self.gameInformation[2]
