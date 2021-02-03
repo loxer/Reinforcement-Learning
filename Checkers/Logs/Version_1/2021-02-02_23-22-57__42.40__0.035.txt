@@ -1,0 +1,32 @@
+******************************************** REINFORCEMENT LEARNING AI LOGBOOK ********************************************
+2021-02-02_23-22-57 || Version: 1
+
+
+------------------------------------------- GAME INFORMATION -------------------------------------------
+Number of Fields: 16 || Number of Pieces of Player: 2
+
+        REWARDS for...
+...Valid Steps: 0 || ...Milestones: 0 || ...Winning: 1 || ...Loosing: -1
+
+
+------------------------------------------- SIMULATION INFORMATION -------------------------------------------
+Action Space Size: 32 || State Space Size: 256 || Q-Table Size: 8192
+Learning Rate: 0.1 || Discount Rate: 0.99
+Number of Episodes: 300000
+
+        EXPLORATION...
+...Starting Rate: 1 || ...Maximum Rate: 1 || ...Minimum Rate: 0.0000001 || ...Decay Rate: 0.00001
+
+
+------------------------------------------- STATISTICS PER 50000 EPISODES -------------------------------------------
+50000 | Valid Steps: 23.82 % || Milestones: 0.15 % || Wins: 0 / 0.000 % || Rewards: -1.00000 | 50000
+100000 | Valid Steps: 37.15 % || Milestones: 0.47 % || Wins: 0 / 0.000 % || Rewards: -1.00000 | 100000
+150000 | Valid Steps: 43.36 % || Milestones: 0.43 % || Wins: 0 / 0.000 % || Rewards: -1.00000 | 150000
+200000 | Valid Steps: 46.46 % || Milestones: 0.51 % || Wins: 20 / 0.040 % || Rewards: -0.99920 | 200000
+250000 | Valid Steps: 47.99 % || Milestones: 0.38 % || Wins: 6 / 0.012 % || Rewards: -0.99976 | 250000
+300000 | Valid Steps: 48.92 % || Milestones: 0.34 % || Wins: 78 / 0.156 % || Rewards: -0.99688 | 300000
+
+Valid Steps in Total: 42.40 %
+Winning Rate in Total: 0.035 %
+
+------------------------------------------- LOG END -------------------------------------------
