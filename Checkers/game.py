@@ -9,7 +9,7 @@ class Game:
         self.numberOfFields = size * size
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
-        self.REWARD_VALID_STEP = 0
+        self.REWARD_VALID_STEP = 0.2
         self.REWARD_MILESTONE = 1
         self.REWARD_WON = 1
         self.REWARD_LOST = 0
