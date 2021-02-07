@@ -10,9 +10,9 @@ class Game:
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
         self.REWARD_VALID_STEP = 0
-        self.REWARD_MILESTONE = 0
+        self.REWARD_MILESTONE = 1
         self.REWARD_WON = 1
-        self.REWARD_LOST = -1
+        self.REWARD_LOST = 0
         self.VERSION = 1
         self.prepareBoard()
 
@@ -156,4 +156,3 @@ class Game:
         docstring
         """
         return [self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST]
-
