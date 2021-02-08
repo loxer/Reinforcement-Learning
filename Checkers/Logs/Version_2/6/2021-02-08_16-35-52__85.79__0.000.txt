@@ -1,0 +1,40 @@
+******************************************** REINFORCEMENT LEARNING AI LOGBOOK ********************************************
+2021-02-08_16-35-52 || Version: 2
+
+
+------------------------------------------- NOTES -------------------------------------------
+Increased board
+
+------------------------------------------- GAME INFORMATION -------------------------------------------
+Number of Fields: 36 || Number of Pieces of Player: 6
+
+        REWARDS for...
+...Valid Steps: 0.2 || ...Milestones: 1 || ...Winning: 1 || ...Loosing: -1
+
+
+------------------------------------------- SIMULATION INFORMATION -------------------------------------------
+Action Space Size: 216 || State Space Size: 258048 || Q-Table Size: 55738368
+Learning Rate: 0.1 || Discount Rate: 0.99
+Number of Episodes: 35000
+
+        EXPLORATION...
+...Starting Rate: 1 || ...Maximum Rate: 1 || ...Minimum Rate: 0.0000001 || ...Decay Rate: 0.0001
+
+
+------------------------------------------- STATISTICS PER 5000 EPISODES -------------------------------------------
+Rewards: -0.93 || Valid Steps: 24.53 % || Milestones: 0.00 % || Wins: 0.00 % / 0 || Episodes: 0 to 5000
+Rewards: -0.78 || Valid Steps: 52.67 % || Milestones: 0.00 % || Wins: 0.00 % / 0 || Episodes: 5000 to 10000
+Rewards: -0.51 || Valid Steps: 70.99 % || Milestones: 0.00 % || Wins: 0.00 % / 0 || Episodes: 10000 to 15000
+Rewards: -0.08 || Valid Steps: 82.10 % || Milestones: 0.00 % || Wins: 0.00 % / 0 || Episodes: 15000 to 20000
+Rewards: 0.75 || Valid Steps: 88.55 % || Milestones: 4.25 % || Wins: 0.00 % / 0 || Episodes: 20000 to 25000
+Rewards: 1.97 || Valid Steps: 91.99 % || Milestones: 14.01 % || Wins: 0.00 % / 0 || Episodes: 25000 to 30000
+Rewards: 3.01 || Valid Steps: 93.58 % || Milestones: 22.85 % || Wins: 0.00 % / 0 || Episodes: 30000 to 35000
+
+Valid Steps in Total: 85.79 %
+Milestone Rate in Total: 5.87 %
+Winning Rate in Total: 0.000 %
+
+Time for Processing 35000 Episodes: 16.3517851 seconds
+Average Time for 1000 Episodes: 0.46719386 seconds
+
+------------------------------------------- LOG END -------------------------------------------

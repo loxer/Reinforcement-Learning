@@ -29,7 +29,7 @@ class HumanPlayer:
 
             while not(game_over):
                 action = input(question + "What do you want to do?" + 2 * new_line)
-                print("")
+                print("")                
 
                 if action == "new":
                     q_table = np.zeros((game.state_space(), game.action_space()))
@@ -64,9 +64,36 @@ class HumanPlayer:
                     print_advised_learning_results = True
                     print(answer + "Reward and state will be printed now." + 2 * new_line)
 
+                elif "check" in action:
+                    action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
+                    if len(action) == 0:
+                        action = answer + "No digits found." + 2 * new_line
+                    else:
+                        action = action[0]
+                        if action <= game.action_space():
+                            _, _, _, info = game.step(action, False)
+                            if info[0] == False:
+                                action = indent + "--- This move would be INVALED ---" + 2 * new_line
+                            else:
+                                action = indent + "+++ This move will be FINE +++" + 2 * new_line
+                        else:
+                            action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
+                    print(action)
+
+                elif action == "help":
+                    for i in range(self.size + 1, game.action_space()):                        
+                        _, _, _, info = game.step(i, False)
+                        # print(str(i) + ": " + str(info[0]))
+                        if info[0] == True:
+                            print(answer + "A valid move will be: " + str(i) + 2 * new_line)
+                            break
+
                 elif action == "print off":
                     print_advised_learning_results = False
                     print(answer + "Reward and state will NOT be printed." + 2 * new_line)
+
+                elif action == "board":
+                    print(self.print_board(game.getBoard(), indent))
 
                 elif action == "stop":
                     game_over = True
@@ -85,8 +112,6 @@ class HumanPlayer:
                     if action <= game.action_space():
                         new_state, reward, game_over, info = game.step(action)
 
-                        print(answer + "New State: " + str(new_state) + new_line)
-
                         if advised_learning_enabled:    # Update Q-table
                             q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
                             learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
@@ -100,14 +125,14 @@ class HumanPlayer:
                         print(indent + self.move_message(info))
 
 
-            action = input(question + "Another round?" + indent + "(yes/no)" + new_line)
+            action = input(new_line + question + "Another round?" + indent + "(yes/no)" + new_line)
             if action == "yes":
-                game_over = False                
+                game_over = False
                 print(game_started)
 
             if action == "no":
                 user_keeps_playing = False
-                print(new_line + indent + "******* See you! *******" + 2 * new_line)                
+                print(new_line + indent + "******* See you *******" + 2 * new_line)                
 
 
     def print_board(self, board, indent):

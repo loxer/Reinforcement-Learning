@@ -7,25 +7,23 @@ class Game:
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
         self.numberOfFields = size * size
+        self.stoneRowsPerPlayer = -((self.size - 2) // -2) # ceiling divisions, thanks to Raymond Hettinger: https://stackoverflow.com/questions/33299093/how-to-perform-ceiling-division-in-integer-arithmetic
         self.stonesPerPlayer = 0
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
         self.REWARD_VALID_STEP = 0.2
         self.REWARD_MILESTONE = 1
-        self.REWARD_WON = 1
-        self.REWARD_LOST = 0
+        self.REWARD_WON = 100
+        self.REWARD_LOST = -1
         self.VERSION = 2
         self.prepareBoard()
+
 
     def reset(self):
         self.clearBoard()
         self.prepareBoard()
-        state = 0
-        for x in range(self.size):
-            for y in range(self.size):                
-                if self.board[x,y] == 1:
-                    state += pow(2, x * self.size + y)
         return self.getState()
+
 
     def prepareBoard(self):
         for x in range(len(self.board)):
@@ -41,6 +39,7 @@ class Game:
         self.stonesPerPlayer = self.stonesPlayer1
         # print(self.board)
 
+
     def clearBoard(self):
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
@@ -48,8 +47,10 @@ class Game:
             for y in range(len(self.board[x])):
                 self.board[x,y] = 0
 
+
     def validField(self, x, y):
         return (x + y) % 2 == 0         # every black field (defined as an even number here) is a valid field
+
 
     def getState(self):
         new_state = 0
@@ -62,8 +63,10 @@ class Game:
                         y += 1      # skip the white fields
         return new_state - 1
 
+
     def arrayPosition(self, x, y):
         return x * len(self.board) + y
+
 
     def moveIsValid(self, player, stoneX, stoneY, toFieldX, toFieldY):
         if player == 1:
@@ -75,11 +78,12 @@ class Game:
 
     def isGameWon(self):
         stonesFinished = 0
-        for y in range(self.size):
-            if self.board[self.size-1, y] == 1:
-                stonesFinished += 1
+        for x in range(self.stoneRowsPerPlayer):
+            for y in range(self.size):
+                if self.board[self.size-x-1, y] == 1:
+                    stonesFinished += 1
         
-        return stonesFinished == self.stonesPlayer1
+        return stonesFinished == self.stonesPerPlayer
 
 
     def action_space(self):        
@@ -96,12 +100,14 @@ class Game:
 
         return highest_possible_state
 
+
     def action_space_sample(self):
         randomStone = random.randint(0, self.stonesPlayer1-1)
         randomField = random.randint(0, self.numberOfFields-1)
         return randomStone * self.numberOfFields + randomField
         
-    def step(self, action):
+
+    def step(self, action, move = True):
         stone = action // self.numberOfFields           # which stone should be moved
         destination = action % self.numberOfFields
         destinationX = destination // self.size
@@ -120,30 +126,34 @@ class Game:
 
                     if stone == -1:                     # find the stone on the board, which should be moved
                         moveIsValid = self.moveIsValid(1, x, y, destinationX, destinationY)
-                        self.board[x,y] = 0
-                        self.board[destinationX,destinationY] = 1
 
-                        if moveIsValid:
-                            new_state = self.getState()
-                            reward = self.REWARD_VALID_STEP
-                            info[0] = True                            
+                        if not(move):                   # check for testing
+                            info[0] = moveIsValid
+                        else:
+                            self.board[x,y] = 0
+                            self.board[destinationX,destinationY] = 1
 
-                            if destinationX == self.size - 1:      # piece is at the other side of the board => considered as 'milestone'
-                                reward = self.REWARD_MILESTONE
-                                done = self.isGameWon()
-                                info[1] = True
-                                # print("Milestone")
+                            if moveIsValid:
+                                new_state = self.getState()
+                                reward = self.REWARD_VALID_STEP
+                                info[0] = True                            
 
-                                if done:                           # game has been won
-                                    reward = self.REWARD_WON
-                                    # print("Game won")
-                                    info[2] = True
-                                    break                                                                   
+                                if destinationX == self.size - self.stoneRowsPerPlayer: # piece is at the other side of the board => considered as 'milestone'
+                                    reward = self.REWARD_MILESTONE
+                                    done = self.isGameWon()
+                                    info[1] = True
+                                    # print("Milestone")
 
-                        else:                                       # player lost, because of invalid move
-                            reward = self.REWARD_LOST
-                            done = True
-                        break
+                                    if done:                           # game has been won
+                                        reward = self.REWARD_WON
+                                        # print("Game won")
+                                        info[2] = True
+                                        break                                                                   
+
+                            else:                                       # player lost, because of invalid move
+                                reward = self.REWARD_LOST
+                                done = True
+                            break
 
         return new_state, reward, done, info
 

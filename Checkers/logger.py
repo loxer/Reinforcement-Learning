@@ -11,7 +11,7 @@ class Logger:
         return "\n\n" + "------------------------------------------- " + headline.upper() + " -------------------------------------------" + "\n"
 
 
-    def getStatistics(self, statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, infoSeparator, newLine):
+    def getStatistics(self, statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, stonesPlayer, infoSeparator, newLine):
 
         rewards = statistics[0]
         valid_steps = statistics[1]
@@ -28,27 +28,26 @@ class Logger:
         for episode_phase in range(num_episodes // statistics_separation_counter):
             sum_valid_steps = sum(valid_steps[episode_phase])
             sum_invalid_steps = sum(invalid_steps[episode_phase])
-            sum_wins = sum(wins[episode_phase])
+            sum_wins = int(sum(wins[episode_phase]))
             sum_milestones = sum(milestones[episode_phase])
             self.overall_win_rate += sum_wins
             self.overall_milestone_rate += sum_milestones
 
-            sum_rewards = "{0:.5f}".format(sum(rewards[episode_phase] / statistics_separation_counter)) + infoSeparator
+            sum_rewards = "{0:.2f}".format(sum(rewards[episode_phase] / statistics_separation_counter)) + infoSeparator
             percentage_valid_steps = "{0:.2f}".format(sum_valid_steps / (sum_valid_steps + sum_invalid_steps) * 100) + " %" + infoSeparator
-            percentage_milestones = "{0:.2f}".format(sum_milestones / statistics_separation_counter * 100) + " %" + infoSeparator
-            percentage_wins = "{0:.3f}".format(sum_wins / statistics_separation_counter * 100) + " %"
+            percentage_milestones = "{0:.2f}".format(sum_milestones / stonesPlayer / statistics_separation_counter * 100) + " %" + infoSeparator
+            percentage_wins = "{0:.2f}".format(sum_wins / statistics_separation_counter * 100) + " %"
             
-
             # logStatistics += str(counter) + " | "
             logStatistics += "Rewards: " + sum_rewards
             logStatistics += "Valid Steps: " + percentage_valid_steps
             logStatistics += "Milestones: " + percentage_milestones
-            logStatistics += "Wins: " + percentage_wins + " / " + str(sum(wins[episode_phase])) + infoSeparator
+            logStatistics += "Wins: " + percentage_wins + " / " + str(sum_wins) + infoSeparator            
             logStatistics += "Episodes: " + str(counter - statistics_separation_counter) + " to " + str(counter)
             logStatistics += newLine
             counter += statistics_separation_counter
 
-        self.overall_milestone_rate = self.overall_milestone_rate / num_episodes
+        self.overall_milestone_rate = self.overall_milestone_rate / stonesPlayer / num_episodes
         self.overall_win_rate = self.overall_win_rate / num_episodes
 
         logStatistics += newLine + "Valid Steps in Total: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
@@ -65,6 +64,7 @@ class Logger:
         FILE = "Logs\\Version_" + str(version) + "\\" + timeFormat + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
+        print("File can be found at: " + FILE)
 
 
     def createLog(self):        
@@ -109,7 +109,7 @@ class Logger:
 
 
         logMessage += self.getHeadline("GAME INFORMATION")
-        logMessage += "Number of Fields: " + str(numberOfFields) + infoSeparator + "Number of Pieces of Player: " + str(stonesPlayer1) + newLine
+        logMessage += "Number of Fields: " + str(numberOfFields) + infoSeparator + "Number of Pieces Per Player: " + str(stonesPlayer1) + newLine
         
         logMessage += newLine +	"        REWARDS for..." + newLine + "...Valid Steps: " + str(rewardValidStep) + infoSeparator + "...Milestones: " + str(rewardMilestone)
         logMessage += infoSeparator + "...Winning: " + str(rewardWon) + infoSeparator + "...Loosing: " + str(rewardLost) + newLine
@@ -126,12 +126,11 @@ class Logger:
 
 
         logMessage += self.getHeadline("STATISTICS PER " + str(statistics_separation_counter) + " EPISODES")
-        logMessage += self.getStatistics(statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, infoSeparator, newLine)
+        logMessage += self.getStatistics(statistics, statistics_separation_counter, num_episodes, total_steps, total_valid_steps, stonesPlayer1, infoSeparator, newLine)
         logMessage += 2*newLine + "Time for Processing " + str(num_episodes) + " Episodes: " + str(timeMeasurement) + " seconds"
         logMessage += newLine + "Average Time for 1000 Episodes: " + str(timeMeasurement / num_episodes * 1000) + " seconds"
 
         logMessage += self.getHeadline("LOG END")
     
-
-        self.writeToFile(version, timeFormat, logMessage)
         print(logMessage)
+        self.writeToFile(version, timeFormat, logMessage)

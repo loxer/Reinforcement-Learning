@@ -10,20 +10,24 @@ class Simulation:
     def __init__(self):
         self.q_table = 0
 
+
     def getAgent(self):
         return self.q_table
 
-    def run(self):
-        log_notes = ""
-        statistics_separation_counter = 50000
 
-        env = Game(4)
+    def run(self, size):
+        self.print_simulation_starter()
+
+        log_notes = "Increased exploration rate"
+        statistics_separation_counter = 25000
+
+        env = Game(size)
         action_space_size = env.action_space()
         state_space_size = env.state_space()
         q_table = np.zeros((state_space_size, action_space_size))
 
-        num_episodes = 300000
-        max_steps_per_episode = 100
+        num_episodes = 1000000
+        max_steps_per_episode = 1000
 
         learning_rate = 0.1
         discount_rate = 0.99
@@ -128,3 +132,10 @@ class Simulation:
         logger.createLog()
 
         self.q_table = q_table
+
+
+    def print_simulation_starter(self):
+        print("\n")
+        print("                  **********************************\n")
+        print("                  ******* SIMULATION STARTED *******\n")
+        print("                  **********************************\n\n")
