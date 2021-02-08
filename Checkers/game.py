@@ -7,13 +7,14 @@ class Game:
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
         self.numberOfFields = size * size
+        self.stonesPerPlayer = 0
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
         self.REWARD_VALID_STEP = 0.2
         self.REWARD_MILESTONE = 1
         self.REWARD_WON = 1
         self.REWARD_LOST = 0
-        self.VERSION = 1
+        self.VERSION = 2
         self.prepareBoard()
 
     def reset(self):
@@ -27,7 +28,7 @@ class Game:
         return self.getState()
 
     def prepareBoard(self):
-        for x in range(len(self.board)):            
+        for x in range(len(self.board)):
             for y in range(len(self.board[x])):
                 if self.validField(x, y):
                     if x < self.size / 2 - 1:   # Rows of Player 1
@@ -37,6 +38,7 @@ class Game:
                     # if x > self.size / 2:     # Rows of Player 2
                     #     self.board[x,y] = 3
                     #     self.stonesPlayer1 += 1
+        self.stonesPerPlayer = self.stonesPlayer1
         # print(self.board)
 
     def clearBoard(self):
@@ -53,12 +55,12 @@ class Game:
         new_state = 0
         for x in range(self.size):
             for y in range(self.size):
-                if self.validField(x, y):       # check only the black fields
-                    if self.board[x,y] == 1:
-                        x = x // 2
-                        y = y // 2
-                        new_state += pow(2, x * self.size + y)  # new state is calculated from binary-to-decimal (board array is in decimal, states are in decimal)
-        return new_state
+                    if self.board[x,y] == 1:                        
+                        y_calc = y // 2                                   
+                        new_state += pow(2, x * self.size // 2 + y_calc)  # new state is calculated from binary-to-decimal (board array is in decimal, states are in decimal)
+                        # print(str(x) + "/" + str(y) + " | " + str(x) + "/" + str(y_calc) + " | Exponent: " + str(x * self.size // 2 + y_calc) + " | Current sum: " + str(new_state))
+                        y += 1      # skip the white fields
+        return new_state - 1
 
     def arrayPosition(self, x, y):
         return x * len(self.board) + y
@@ -80,16 +82,19 @@ class Game:
         return stonesFinished == self.stonesPlayer1
 
 
-    def action_space(self):
-        # ceiling divisions, thanks to Raymond Hettinger: https://stackoverflow.com/questions/33299093/how-to-perform-ceiling-division-in-integer-arithmetic
-        stoneRowsPerPlayer = -((self.size - 2) // -2)
-        self.stonesPerPlayer = -((stoneRowsPerPlayer * self.size) // -2)
-        possibleActions = self.stonesPerPlayer * self.numberOfFields
-        return possibleActions
+    def action_space(self):        
+        return self.stonesPerPlayer * self.numberOfFields   # highest number of possible actions
+
 
     def state_space(self):
-        possibleActions = pow(self.numberOfFields, 2)
-        return possibleActions
+        # ceiling divisions, thanks to Raymond Hettinger: https://stackoverflow.com/questions/33299093/how-to-perform-ceiling-division-in-integer-arithmetic
+        valid_fields = -(self.numberOfFields // -2)
+        highest_possible_state = 0
+        
+        for i in range(self.stonesPerPlayer):            
+            highest_possible_state += pow(2, valid_fields - i - 1)
+
+        return highest_possible_state
 
     def action_space_sample(self):
         randomStone = random.randint(0, self.stonesPlayer1-1)
@@ -101,32 +106,25 @@ class Game:
         destination = action % self.numberOfFields
         destinationX = destination // self.size
         destinationY = destination % self.size
-        # origin = -1
 
-        new_state = self.getState()
+        new_state = 0
         reward = 0
         done = False
         info = [False, False, False]       # [0] => bool, valid steps; [1] => bool, reached milestone; [2] => bool, game won
         
         for x in range(self.size):
             for y in range(self.size):
-                
-                # if self.board[x,y] == 1:
-                #     new_state += pow(2, x * self.size + y)
 
                 if self.board[x, y] == 1:
                     stone -= 1
+
                     if stone == -1:                     # find the stone on the board, which should be moved
                         moveIsValid = self.moveIsValid(1, x, y, destinationX, destinationY)
-
                         self.board[x,y] = 0
                         self.board[destinationX,destinationY] = 1
-                        
-                        # print("From: " + str(x) + "/" + str(y))
-                        # print("To: " + str(destinationX) + "/" + str(destinationY))
-                        # origin = self.arrayPosition(x, y)
-                        
+
                         if moveIsValid:
+                            new_state = self.getState()
                             reward = self.REWARD_VALID_STEP
                             info[0] = True                            
 
@@ -146,10 +144,13 @@ class Game:
                             reward = self.REWARD_LOST
                             done = True
                         break
+
         return new_state, reward, done, info
+
 
     def getBoard(self):
         return self.board
+
 
     def getLoggingInformation(self):
         """
