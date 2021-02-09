@@ -26,7 +26,7 @@ class Simulation:
         state_space_size = env.state_space()
         q_table = np.zeros((state_space_size, action_space_size))
 
-        num_episodes = 1000000
+        num_episodes = 3000000
         max_steps_per_episode = 1000
 
         learning_rate = 0.1
@@ -35,7 +35,7 @@ class Simulation:
         start_exploration_rate = exploration_rate = 1
         max_exploration_rate = 1
         min_exploration_rate = log_min_exploration_rate = "0.0000001"
-        exploration_decay_rate = log_exploration_decay_rate = "0.00001"
+        exploration_decay_rate = log_exploration_decay_rate = "0.000006"
 
         min_exploration_rate = float(min_exploration_rate)
         exploration_decay_rate = float(exploration_decay_rate)
