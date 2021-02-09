@@ -18,7 +18,7 @@ class Simulation:
     def run(self, size):
         self.print_simulation_starter()
 
-        log_notes = "Increased exploration rate"
+        log_notes = "Decreased exploration decay rate"
         statistics_separation_counter = 25000
 
         env = Game(size)
@@ -126,7 +126,7 @@ class Simulation:
 
         simulationInformation = [timeFormat, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                                 exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
-                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement]
+                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, size]
 
         logger = Logger(gameInformation, simulationInformation)
         logger.createLog()

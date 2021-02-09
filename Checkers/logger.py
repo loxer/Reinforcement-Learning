@@ -57,11 +57,11 @@ class Logger:
         return logStatistics
 
 
-    def writeToFile(self, version, timeFormat, logMessage):        
+    def writeToFile(self, version, timeFormat, size, logMessage):        
         valid_steps_rate = "__" + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100)#.replace('.' , '-')
         win_rate = "__" + "{0:.3f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
         file_format = ".txt"
-        FILE = "Logs\\Version_" + str(version) + "\\" + timeFormat + valid_steps_rate + win_rate + file_format
+        FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + timeFormat + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
         print("File can be found at: " + FILE)
@@ -95,6 +95,7 @@ class Logger:
         total_steps = self.simulationInformation[16]
         total_valid_steps = self.simulationInformation[17]
         timeMeasurement = self.simulationInformation[18]
+        size = self.simulationInformation[19]
 
         newLine = "\n"
         infoSeparator = " || "
@@ -133,4 +134,4 @@ class Logger:
         logMessage += self.getHeadline("LOG END")
     
         print(logMessage)
-        self.writeToFile(version, timeFormat, logMessage)
+        self.writeToFile(version, timeFormat, size, logMessage)
