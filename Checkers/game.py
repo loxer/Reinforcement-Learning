@@ -11,9 +11,9 @@ class Game:
         self.stonesPerPlayer = 0
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
-        self.REWARD_VALID_STEP = 0.2
-        self.REWARD_MILESTONE = 1
-        self.REWARD_WON = 100
+        self.REWARD_VALID_STEP = 0
+        self.REWARD_MILESTONE = 0
+        self.REWARD_WON = 0
         self.REWARD_LOST = -1
         self.VERSION = 2
         self.prepareBoard()

@@ -57,14 +57,14 @@ class Logger:
         return logStatistics
 
 
-    def writeToFile(self, version, timeFormat, size, logMessage):        
+    def writeToFile(self, version, startingTime, size, logMessage):        
         valid_steps_rate = "__" + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100)#.replace('.' , '-')
         win_rate = "__" + "{0:.3f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
         file_format = ".txt"
-        FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + timeFormat + valid_steps_rate + win_rate + file_format
+        FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
-        print("File can be found at: " + FILE)
+        print("\nFile can be found at: " + FILE + "\n\n")
 
 
     def createLog(self):        
@@ -76,7 +76,7 @@ class Logger:
         rewardWon = self.gameInformation[5]
         rewardLost = self.gameInformation[6]
 
-        timeFormat = self.simulationInformation[0]
+        startingTime = self.simulationInformation[0]
         action_space_size = self.simulationInformation[1]
         state_space_size = self.simulationInformation[2]
         # q_table = self.simulationInformation[3]
@@ -96,12 +96,14 @@ class Logger:
         total_valid_steps = self.simulationInformation[17]
         timeMeasurement = self.simulationInformation[18]
         size = self.simulationInformation[19]
+        simulation_episode = self.simulationInformation[20]
+        endingTime = self.simulationInformation[21]
 
         newLine = "\n"
         infoSeparator = " || "
 
         logMessage = "******************************************** " + "REINFORCEMENT LEARNING AI LOGBOOK" + " ********************************************" + newLine
-        logMessage += timeFormat + infoSeparator + "Version: " + str(version) + newLine
+        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Simulation Episode: " + str(simulation_episode) + newLine
 
 
         if notes:
@@ -134,4 +136,5 @@ class Logger:
         logMessage += self.getHeadline("LOG END")
     
         print(logMessage)
-        self.writeToFile(version, timeFormat, size, logMessage)
+        print("Simulation ended at: " + endingTime)
+        self.writeToFile(version, startingTime, size, logMessage)
