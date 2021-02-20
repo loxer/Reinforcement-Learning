@@ -3,7 +3,7 @@ import random
 
 
 class Game:
-    def __init__(self, size):
+    def __init__(self, size, reward_settings):
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
         self.numberOfFields = size * size
@@ -11,10 +11,10 @@ class Game:
         self.stonesPerPlayer = 0
         self.stonesPlayer1 = 0
         self.stonesPlayer2 = 0
-        self.REWARD_VALID_STEP = 0
-        self.REWARD_MILESTONE = 0
-        self.REWARD_WON = 0
-        self.REWARD_LOST = -1
+        self.reward_valid_step = reward_settings[0]
+        self.reward_milestone = reward_settings[1]
+        self.reward_won = reward_settings[2]
+        self.reward_lost = reward_settings[3]
         self.VERSION = 2
         self.prepareBoard()
 
@@ -135,23 +135,23 @@ class Game:
 
                             if moveIsValid:
                                 new_state = self.getState()
-                                reward = self.REWARD_VALID_STEP
+                                reward = self.reward_valid_step
                                 info[0] = True                            
 
                                 if destinationX == self.size - self.stoneRowsPerPlayer: # piece is at the other side of the board => considered as 'milestone'
-                                    reward = self.REWARD_MILESTONE
+                                    reward = self.reward_milestone
                                     done = self.isGameWon()
                                     info[1] = True
                                     # print("Milestone")
 
                                     if done:                           # game has been won
-                                        reward = self.REWARD_WON
+                                        reward = self.reward_won
                                         # print("Game won")
                                         info[2] = True
                                         break                                                                   
 
                             else:                                       # player lost, because of invalid move
-                                reward = self.REWARD_LOST
+                                reward = self.reward_lost
                                 done = True
                             break
 
@@ -166,4 +166,4 @@ class Game:
         """
         docstring
         """
-        return [self.VERSION, self.numberOfFields, self.stonesPlayer1, self.REWARD_VALID_STEP, self.REWARD_MILESTONE, self.REWARD_WON, self.REWARD_LOST]
+        return [self.VERSION, self.numberOfFields, self.stonesPlayer1, self.reward_valid_step, self.reward_milestone, self.reward_won, self.reward_lost]

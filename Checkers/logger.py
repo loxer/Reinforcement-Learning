@@ -96,14 +96,15 @@ class Logger:
         total_valid_steps = self.simulationInformation[17]
         timeMeasurement = self.simulationInformation[18]
         size = self.simulationInformation[19]
-        simulation_episode = self.simulationInformation[20]
-        endingTime = self.simulationInformation[21]
+        current_simulation_episode = self.simulationInformation[20]
+        num_simulations = self.simulationInformation[21]
+        endingTime = self.simulationInformation[22]
 
         newLine = "\n"
         infoSeparator = " || "
 
         logMessage = "******************************************** " + "REINFORCEMENT LEARNING AI LOGBOOK" + " ********************************************" + newLine
-        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Simulation Episode: " + str(simulation_episode) + newLine
+        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Simulation Episode: " + current_simulation_episode + "/" + num_simulations + newLine
 
 
         if notes:

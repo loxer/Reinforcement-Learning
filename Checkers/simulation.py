@@ -15,30 +15,25 @@ class Simulation:
         return self.q_table
 
 
-    def run(self, size, simulation_episode):
-        self.print_simulation_starter(simulation_episode)
+    def run(self, board, simulation_settings, logging_settings, current_simulation_episode):        
+        board_size = simulation_settings[0]
+        num_simulations = simulation_settings[1]
 
-        log_notes = "Negative Rewards (for losing), only"
-        statistics_separation_counter = 25000
-
-        env = Game(size)
+        env = board     # change that later
         action_space_size = env.action_space()
         state_space_size = env.state_space()
         q_table = np.zeros((state_space_size, action_space_size))
 
-        num_episodes = 3000000
-        max_steps_per_episode = 1000
+        num_episodes = simulation_settings[2]
+        max_steps_per_episode = simulation_settings[3]
 
-        learning_rate = 0.1
-        discount_rate = 0.99
+        learning_rate = simulation_settings[4]
+        discount_rate = simulation_settings[5]
 
-        start_exploration_rate = exploration_rate = 1
-        max_exploration_rate = 1
-        min_exploration_rate = log_min_exploration_rate = "0.0000001"
-        exploration_decay_rate = log_exploration_decay_rate = "0.0000065"
-
-        min_exploration_rate = float(min_exploration_rate)
-        exploration_decay_rate = float(exploration_decay_rate)
+        start_exploration_rate = exploration_rate = simulation_settings[6]
+        max_exploration_rate = simulation_settings[7]
+        min_exploration_rate = float(simulation_settings[8])
+        exploration_decay_rate = float(simulation_settings[9])
 
         rewards_all_episodes = []
         invalid_steps_all_episodes = []
@@ -46,7 +41,9 @@ class Simulation:
         milestones_all_episodes = []
         wins_of_all_episodes = []
 
-        startingTime = time.gmtime()
+        self.print_simulation_starter(current_simulation_episode, num_simulations)
+        startingTime = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
+        print("\n\nSimulation started at: " + startingTime + "\n")
         timeMeasurement = timeit.default_timer()
 
         # Q-learning algorithm
@@ -112,6 +109,7 @@ class Simulation:
         total_valid_steps = sum(valid_steps_all_episodes)
         total_steps = total_valid_steps + sum(invalid_steps_all_episodes)
 
+        statistics_separation_counter = logging_settings[1]
         rewards_all_episodes = np.split(np.array(rewards_all_episodes),num_episodes/statistics_separation_counter)
         valid_steps_all_episodes = np.split(np.array(valid_steps_all_episodes),num_episodes/statistics_separation_counter)
         invalid_steps_all_episodes = np.split(np.array(invalid_steps_all_episodes),num_episodes/statistics_separation_counter)
@@ -121,13 +119,12 @@ class Simulation:
 
 
         # From here the logging starts
-        gameInformation = env.getLoggingInformation()
-        startingTime = time.strftime("%Y-%m-%d_%H-%M-%S", startingTime) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
+        gameInformation = env.getLoggingInformation()        
         endingTime = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())        
 
         simulationInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
-                                exploration_rate, log_exploration_decay_rate, max_exploration_rate, log_min_exploration_rate, start_exploration_rate, log_notes,
-                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, size, simulation_episode, endingTime]
+                                exploration_rate, simulation_settings[9], max_exploration_rate, simulation_settings[8], start_exploration_rate, logging_settings[0],
+                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_simulation_episode, num_simulations, endingTime]
 
         logger = Logger(gameInformation, simulationInformation)
         logger.createLog()
@@ -135,9 +132,8 @@ class Simulation:
         self.q_table = q_table
 
 
-    def print_simulation_starter(self, simulation_episode):
-        simulation_episode = str(simulation_episode)
+    def print_simulation_starter(self, current_simulation_episode, num_simulations):
         print("\n")
-        print("                  ****************************************\n")
-        print("                  ***** SIMULATION EPISODE " + simulation_episode + " STARTED *****\n")
-        print("                  ****************************************\n\n")
+        print("                  ******************************************\n")
+        print("                  ***** SIMULATION EPISODE " + current_simulation_episode + "/" + num_simulations + " STARTED *****\n")
+        print("                  ******************************************\n\n")
