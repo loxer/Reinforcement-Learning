@@ -1,4 +1,3 @@
-from game import *
 from logger import *
 import numpy as np
 import random
@@ -8,7 +7,7 @@ import timeit
 
 class Simulation:
     def __init__(self):
-        self.q_table = 0
+        self.logger = ""
 
 
     def getAgent(self):
@@ -125,9 +124,9 @@ class Simulation:
         simulationInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                                 exploration_rate, simulation_settings[9], max_exploration_rate, simulation_settings[8], start_exploration_rate, logging_settings[0],
                                 statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_simulation_episode, num_simulations, endingTime]
-
-        logger = Logger(gameInformation, simulationInformation)
-        logger.createLog()
+        
+        self.logger = Logger(gameInformation, simulationInformation)
+        self.logger.createLog()
 
         self.q_table = q_table
 
@@ -137,3 +136,7 @@ class Simulation:
         print("                  ******************************************\n")
         print("                  ***** SIMULATION EPISODE " + current_simulation_episode + "/" + num_simulations + " STARTED *****\n")
         print("                  ******************************************\n\n")
+
+
+    def get_logging_data(self):
+        return self.logger.getData()

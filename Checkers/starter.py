@@ -1,6 +1,5 @@
 from game import *
 from humanPlayer import *
-# import numpy as np
 
 # Simulation Settings
 board_size = 6
@@ -40,9 +39,6 @@ logging_settings = [log_notes, statistics_separation_counter]
 board = Game(board_size, reward_settings)
 
 
-# for simulation_episode in range(num_simulations):
-#     simulation = Simulation()
-#     simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
-
+# Start the programm
 controller = HumanPlayer(board_size)
 controller.start(board, simulation_settings, logging_settings)

@@ -1,4 +1,3 @@
-# from game import *
 from simulation import *
 import numpy as np
 
@@ -40,20 +39,30 @@ class HumanPlayer:
 
             if action == "train":
                 agents = []
-                for simulation_episode in range(simulation_settings[1]):
+                agents_data = []
+                num_episodes = simulation_settings[1]
+                for simulation_episode in range(num_episodes):
                     simulation = Simulation()
                     simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
                     agents.append(simulation.getAgent())
+                    agents_data.append(simulation.get_logging_data())
                 
                 while not(question_answered):
-                    action = input(question + "Do you want to keep an agent?" + 2 * new_line)
-                    if action == "yes":
-                        q_table = agents[simulation_settings[1]-1]
-                        question_answered = True
+                    print(new_line + question + "Do you want to keep any of the following agents?" + new_line)
+                    for i in range(num_episodes):
+                        print(answer + str(i+1) + ": " + agents_data[i][0] + "File: " + agents_data[i][1])
+                    action = input()
+                    
                     if action == "no":
                         question_answered = True
-                    if action == "how":
-                        print(len(agents))
+                    elif action.isdigit():
+                        action = int(action)
+                        if action > 0 and action <= num_episodes:
+                            q_table = agents[action-1]
+                            question_answered = True
+                        else:
+                            print(answer + "This agent does NOT exist!" + new_line)
+                print(new_line)
 
             if action == "close":
                 programming_running = False
@@ -82,12 +91,12 @@ class HumanPlayer:
                         print(answer + "Current state: " + str(game.getState()) + 2 * new_line)
 
                     elif action == "tip":
-                        print(answer + "Agent suggests: " + str(np.argmax(q_table[state,:])) + 2 * new_line)
+                        pos_values, _ = self.get_highest_values(q_table, state)
+                        print(answer + "Agent suggests: " + pos_values + 2 * new_line)
 
-                    elif action == "max":
+                    elif action == "table":
                             reward = np.argmax(q_table[state,:])
-                            print(answer + "q_table[state,:]: " + str(q_table[state,:]) + 2 * new_line)
-                            # print (indent + "Highest reward: " + str(np.argmax(q_table[,reward:])) + "\n")                    
+                            print(self.print_q_table(q_table, state, indent, answer, new_line))               
 
                     elif action == "print":
                         print_advised_learning_results = True
@@ -109,7 +118,7 @@ class HumanPlayer:
                                 action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
                         print(action)
 
-                    elif action == "help":
+                    elif action == "hint":
                         for i in range(board_size + 1, game.action_space()):                        
                             _, _, _, info = game.step(i, False)
                             # print(str(i) + ": " + str(info[0]))
@@ -166,6 +175,36 @@ class HumanPlayer:
         for x in range(len(board)):
             board_print += 2 * indent + str(board[x]) + "\n"
         return board_print
+
+
+    def print_q_table(self, q_table, state, indent, answer, new_line):
+        q_table_print = answer + "All q_table data at state " + str(state) + ":" + 2*new_line
+        for i in range(len(q_table[state,:])):
+            q_table_print += indent + str(i) + ".: " + str(q_table[state,i]) + new_line
+        
+        pos_values, highest_value = self.get_highest_values(q_table, state)
+        q_table_print += new_line + answer + "Highest value is " + str(highest_value) + " and can be found at position(s): " + pos_values + 2*new_line
+
+        return q_table_print
+
+
+    def get_highest_values(self, q_table, state):
+        values = []
+        highest_value = float('-inf')
+        for i in range(len(q_table[state,:])):
+            if q_table[state,i] > highest_value:
+                highest_value = q_table[state,i]
+                values.clear()
+                values.append(i)
+            elif q_table[state,i] == highest_value:
+                values.append(i)
+        
+        pos_values = ""
+        for k in range(len(values)):
+            pos_values += str(values[k])
+            if k < len(values)-1:
+                pos_values += ", "
+        return pos_values, highest_value
 
 
     def move_message(self, info):

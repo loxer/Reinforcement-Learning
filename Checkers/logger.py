@@ -5,6 +5,12 @@ class Logger:
         self.success_rate_overall_valid_steps = 0
         self.overall_milestone_rate = 0
         self.overall_win_rate = 0
+        self.statistic_string = ""
+        self.FILE = ""
+
+
+    def getData(self):
+        return self.statistic_string, self.FILE
 
 
     def getHeadline(self, headline):
@@ -50,10 +56,15 @@ class Logger:
         self.overall_milestone_rate = self.overall_milestone_rate / stonesPlayer / num_episodes
         self.overall_win_rate = self.overall_win_rate / num_episodes
 
-        logStatistics += newLine + "Valid Steps in Total: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
-        logStatistics += newLine + "Milestone Rate in Total: " + "{0:.2f}".format(self.overall_milestone_rate * 100) + " %"
-        logStatistics += newLine + "Winning Rate in Total: " + "{0:.3f}".format(self.overall_win_rate * 100) + " %"
+        valid_steps_total = "Valid Steps Rate: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
+        milestones_total = "Milestone Rate: " + "{0:.2f}".format(self.overall_milestone_rate * 100) + " %"
+        wins_total = "Winning Rate: " + "{0:.2f}".format(self.overall_win_rate * 100) + " %"
 
+        logStatistics += newLine + "Total " + valid_steps_total
+        logStatistics += newLine + "Total " + milestones_total
+        logStatistics += newLine + "Total " + wins_total
+
+        self.statistic_string = infoSeparator + valid_steps_total + infoSeparator + milestones_total + infoSeparator + wins_total + infoSeparator
         return logStatistics
 
 
@@ -64,6 +75,7 @@ class Logger:
         FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
+        self.FILE = FILE
         print("\nFile can be found at: " + FILE + "\n\n")
 
 
