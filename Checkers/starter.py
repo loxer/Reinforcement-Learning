@@ -1,7 +1,6 @@
 from game import *
 from humanPlayer import *
-from simulation import *
-import numpy as np
+# import numpy as np
 
 # Simulation Settings
 board_size = 6
@@ -14,7 +13,7 @@ discount_rate = 0.99
 
 start_exploration_rate = 1
 max_exploration_rate = 1
-min_exploration_rate = "0.0000000"          # as string for logs, will be casted to float at the simulation
+min_exploration_rate = "0.0000000"          # as string for logs, will be casted to float at the training
 exploration_decay_rate = "0.0000065"        # same
 
 # Reward Settings
@@ -29,20 +28,21 @@ statistics_separation_counter = 2500
 
 
 # Storing Settings in Lists
-simulation_settings = [board_size, str(num_simulations), num_episodes_per_simulation, max_steps_per_episode, learning_rate, discount_rate, 
+simulation_settings = [board_size, num_simulations, num_episodes_per_simulation, max_steps_per_episode, learning_rate, discount_rate, 
                        start_exploration_rate, max_exploration_rate, min_exploration_rate, exploration_decay_rate]
 
 reward_settings = [reward_valid_step, reward_milestone, reward_won, reward_lost]
 
 logging_settings = [log_notes, statistics_separation_counter]
 
-learning_attributes = [learning_rate, discount_rate]
 
+# Create a board
 board = Game(board_size, reward_settings)
 
-for simulation_episode in range(num_simulations):
-    simulation = Simulation()
-    simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
 
-# match = HumanPlayer(board_size)
-# match.start(0, learning_attributes)
+# for simulation_episode in range(num_simulations):
+#     simulation = Simulation()
+#     simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
+
+controller = HumanPlayer(board_size)
+controller.start(board, simulation_settings, logging_settings)

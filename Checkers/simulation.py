@@ -17,7 +17,7 @@ class Simulation:
 
     def run(self, board, simulation_settings, logging_settings, current_simulation_episode):        
         board_size = simulation_settings[0]
-        num_simulations = simulation_settings[1]
+        num_simulations = str(simulation_settings[1])
 
         env = board     # change that later
         action_space_size = env.action_space()

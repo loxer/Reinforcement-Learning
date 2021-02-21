@@ -1,4 +1,5 @@
-from game import *
+# from game import *
+from simulation import *
 import numpy as np
 
 
@@ -7,14 +8,21 @@ class HumanPlayer:
         self.size = size
 
 
-    def start(self, q_table, learning_attributes):
-        game = Game(self.size)
-        user_keeps_playing = True
+    def start(self, board, simulation_settings, logging_settings):
+        game = board
+        q_table = np.zeros((game.state_space(), game.action_space()))
+        
+        board_size = simulation_settings[0]        
+        learning_rate = simulation_settings[4]
+        discount_rate = simulation_settings[5]
+
+        programming_running = True
+        user_keeps_playing = False
         game_over = False
+        question_answered = False
         advised_learning_enabled = False
         print_advised_learning_results = False
-        learning_rate = learning_attributes[0]
-        discount_rate = learning_attributes[1]
+
 
         new_line = "\n"
         indent = "         "        
@@ -23,116 +31,134 @@ class HumanPlayer:
         game_started = 2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent)
 
         print(game_started)
-        
-        while user_keeps_playing:
-            state = game.reset()
+        while programming_running:
+            action = input(question + "What do you want to do?" + 2 * new_line)
+            print("")
 
-            while not(game_over):
-                action = input(question + "What do you want to do?" + 2 * new_line)
-                print("")                
+            if action == "play":
+                user_keeps_playing = True
 
-                if action == "new":
-                    q_table = np.zeros((game.state_space(), game.action_space()))
-                    print(answer + "New Q-Table created!" + 2 * new_line)
-
-                elif action == "on":
-                    if isinstance(q_table, int):
-                        print(answer + self.q_table_missing() + 2 * new_line)
-                    else:
-                        advised_learning_enabled = True
-                        print(answer + "All further moves will be used to improve the agent." + 2 * new_line)
-
-                elif action == "off":
-                    advised_learning_enabled = False
-                    print(answer + "Agent will not learn from further moves." + 2 * new_line)
+            if action == "train":
+                agents = []
+                for simulation_episode in range(simulation_settings[1]):
+                    simulation = Simulation()
+                    simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
+                    agents.append(simulation.getAgent())
                 
-                elif action == "state":
-                    print(answer + "Current state: " + str(game.getState()) + 2 * new_line)
+                while not(question_answered):
+                    action = input(question + "Do you want to keep an agent?" + 2 * new_line)
+                    if action == "yes":
+                        q_table = agents[simulation_settings[1]-1]
+                        question_answered = True
+                    if action == "no":
+                        question_answered = True
+                    if action == "how":
+                        print(len(agents))
 
-                elif action == "tip":
-                    print(answer + "Agent suggests: " + str(np.argmax(q_table[state,:])) + 2 * new_line)
+            if action == "close":
+                programming_running = False
 
-                elif action == "max":
-                    if isinstance(q_table, int):
-                        print(answer + self.q_table_missing() + 2 * new_line)
-                    else:
-                        reward = np.argmax(q_table[state,:])
-                        print(answer + "q_table[state,:]: " + str(q_table[state,:]) + 2 * new_line)
-                        # print (indent + "Highest reward: " + str(np.argmax(q_table[,reward:])) + "\n")                    
 
-                elif action == "print":
-                    print_advised_learning_results = True
-                    print(answer + "Reward and state will be printed now." + 2 * new_line)
+            while user_keeps_playing:
+                state = game.reset()
 
-                elif "check" in action:
-                    action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
-                    if len(action) == 0:
-                        action = answer + "No digits found." + 2 * new_line
-                    else:
-                        action = action[0]
-                        if action <= game.action_space():
-                            _, _, _, info = game.step(action, False)
-                            if info[0] == False:
-                                action = indent + "--- This move would be INVALED ---" + 2 * new_line
-                            else:
-                                action = indent + "+++ This move will be FINE +++" + 2 * new_line
+                while not(game_over):
+                    action = input(question + "What do you want to do?" + 2 * new_line)
+                    print("")                
+
+                    if action == "new":
+                        q_table = np.zeros((game.state_space(), game.action_space()))
+                        print(answer + "New Q-Table created!" + 2 * new_line)
+
+                    elif action == "on":
+                            advised_learning_enabled = True
+                            print(answer + "All further moves will be used to improve the agent." + 2 * new_line)
+
+                    elif action == "off":
+                        advised_learning_enabled = False
+                        print(answer + "Agent will not learn from further moves." + 2 * new_line)
+                    
+                    elif action == "state":
+                        print(answer + "Current state: " + str(game.getState()) + 2 * new_line)
+
+                    elif action == "tip":
+                        print(answer + "Agent suggests: " + str(np.argmax(q_table[state,:])) + 2 * new_line)
+
+                    elif action == "max":
+                            reward = np.argmax(q_table[state,:])
+                            print(answer + "q_table[state,:]: " + str(q_table[state,:]) + 2 * new_line)
+                            # print (indent + "Highest reward: " + str(np.argmax(q_table[,reward:])) + "\n")                    
+
+                    elif action == "print":
+                        print_advised_learning_results = True
+                        print(answer + "Reward and state will be printed now." + 2 * new_line)
+
+                    elif "check" in action:
+                        action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
+                        if len(action) == 0:
+                            action = answer + "No digits found." + 2 * new_line
                         else:
-                            action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
-                    print(action)
+                            action = action[0]
+                            if action <= game.action_space():
+                                _, _, _, info = game.step(action, False)
+                                if info[0] == False:
+                                    action = indent + "--- This move would be INVALED ---" + 2 * new_line
+                                else:
+                                    action = indent + "+++ This move will be FINE +++" + 2 * new_line
+                            else:
+                                action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
+                        print(action)
 
-                elif action == "help":
-                    for i in range(self.size + 1, game.action_space()):                        
-                        _, _, _, info = game.step(i, False)
-                        # print(str(i) + ": " + str(info[0]))
-                        if info[0] == True:
-                            print(answer + "A valid move will be: " + str(i) + 2 * new_line)
-                            break
+                    elif action == "help":
+                        for i in range(board_size + 1, game.action_space()):                        
+                            _, _, _, info = game.step(i, False)
+                            # print(str(i) + ": " + str(info[0]))
+                            if info[0] == True:
+                                print(answer + "A valid move will be: " + str(i) + 2 * new_line)
+                                break
 
-                elif action == "print off":
-                    print_advised_learning_results = False
-                    print(answer + "Reward and state will NOT be printed." + 2 * new_line)
+                    elif action == "print off":
+                        print_advised_learning_results = False
+                        print(answer + "Reward and state will NOT be printed." + 2 * new_line)
 
-                elif action == "board":
-                    print(self.print_board(game.getBoard(), indent))
-
-                elif action == "stop":
-                    game_over = True
-                    print(indent + "------ Match aborted ------" + 2 * new_line)
-
-                elif action == "pass":
-                    if isinstance(q_table, int):
-                        print(answer + self.q_table_missing() + 2 * new_line)
-                    else:
-                        action = str(np.argmax(q_table[state,:]))
-                        print(answer + "Agent's step: " + action + 2 * new_line)
-
-                if action.isdigit():
-                    action = int(action)
-
-                    if action <= game.action_space():
-                        new_state, reward, game_over, info = game.step(action)
-
-                        if advised_learning_enabled:    # Update Q-table
-                            q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
-                            learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
-
-                        if print_advised_learning_results:
-                            print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
-
-                        state = new_state       # Set new state
-                        
+                    elif action == "board":
                         print(self.print_board(game.getBoard(), indent))
-                        print(indent + self.move_message(info))
+
+                    elif action == "stop":
+                        game_over = True
+                        print(indent + "------ Match aborted ------" + 2 * new_line)
+
+                    elif action == "pass":
+                            action = str(np.argmax(q_table[state,:]))
+                            print(answer + "Agent's step: " + action + 2 * new_line)
+
+                    if action.isdigit():
+                        action = int(action)
+
+                        if action <= game.action_space():
+                            new_state, reward, game_over, info = game.step(action)
+
+                            if advised_learning_enabled:    # Update Q-table
+                                q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
+                                learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
+
+                            if print_advised_learning_results:
+                                print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
+
+                            state = new_state       # Set new state
+                            
+                            print(self.print_board(game.getBoard(), indent))
+                            print(indent + self.move_message(info))
 
 
-            action = input(new_line + question + "Another round?" + indent + "(yes/no)" + new_line)
-            if action == "yes":
-                game_over = False
-                print(game_started)
+                action = input(new_line + question + "Another round?" + indent + "(yes/no)" + new_line)
+                if action == "yes":
+                    game_over = False
+                    print(game_started)
 
-            if action == "no":
-                user_keeps_playing = False
-                print(new_line + indent + "******* See you *******" + 2 * new_line)                
+                if action == "no":
+                    user_keeps_playing = False
+                    print(new_line + indent + "******* See you *******" + 2 * new_line)                
 
 
     def print_board(self, board, indent):
@@ -155,7 +181,3 @@ class HumanPlayer:
             msg_for_user += "++ Your move was valid ++"
 
         return msg_for_user + "\n\n"
-
-
-    def q_table_missing(self):
-        return "No Q-Table found!"
