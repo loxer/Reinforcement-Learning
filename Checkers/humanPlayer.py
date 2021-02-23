@@ -6,24 +6,26 @@ import h5py
 class HumanPlayer:
     def __init__(self, size):
         self.size = size
+        self.agents = []
+        self.agents_data = []
+        self.q_table = 0
 
 
     def start(self, board, simulation_settings, logging_settings, agent_save_path):
         game = board
-        q_table = np.zeros((game.state_space(), game.action_space()))
+        self.q_table = np.zeros((game.state_space(), game.action_space()))
         
-        board_size = simulation_settings[0]        
+        board_size = simulation_settings[0]
         learning_rate = simulation_settings[4]
         discount_rate = simulation_settings[5]
 
         programming_running = True
         user_keeps_playing = False
         game_over = False
-        question_answered = False
+        # question_answered = False
         advised_learning_enabled = False
         print_advised_learning_results = False
         
-
         new_line = "\n"
         indent = "         "        
         question = indent + "¿¿¿ "
@@ -35,48 +37,40 @@ class HumanPlayer:
             action = input(question + "What do you want to do?" + 2 * new_line)
             print("")
 
-            if action == "play":
+            if action == "new":
+                self.q_table = np.zeros((game.state_space(), game.action_space()))
+                print(answer + "New Q-Table created!" + 2 * new_line)
+
+            elif action == "agents":
+                self.view_agents(agent_save_path, answer, new_line)
+
+            elif action == "train":
+                self.train_new_agents(board, simulation_settings, logging_settings)
+                self.show_results(indent, answer, new_line)
+
+            elif action == "results":
+                self.show_results(indent, answer, new_line)
+
+            elif action == "save current":
+                self.save_agent(agent_save_path, False, answer, new_line)
+
+            elif "load" in action or "save" in action or "use" in action:
+                digit = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
+                if len(digit) == 0:
+                    action = self.no_digits_found(answer, new_line)
+                else:
+                    digit = digit[0] - 1
+                    if "load" in action:
+                        self.q_table = self.load_agent(agent_save_path, digit, answer, new_line)
+                    elif "save" in action:
+                        self.save_agent(agent_save_path, digit, answer, new_line)
+                    elif "use" in action:
+                        self.use_trained_agent(digit, answer, new_line)
+
+            elif action == "play":
                 user_keeps_playing = True
                 game_over = False
 
-            elif action == "load":
-                with h5py.File(agent_save_path, "r") as hdf:
-                    agent_list = list(hdf.keys())
-                    print("Available agents: ")
-                    print(agent_list)
-                    loaded_agent = hdf.get("agent1")
-                    q_table = np.array(loaded_agent)
-
-            elif action == "train":
-                agents = []
-                agents_data = []
-                num_episodes = simulation_settings[1]
-                for simulation_episode in range(num_episodes):
-                    simulation = Simulation()
-                    simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
-                    agents.append(simulation.getAgent())
-                    agents_data.append(simulation.get_logging_data())
-                
-                while not(question_answered):
-                    print(new_line + question + "Do you want to keep any of the following agents?" + new_line)
-                    for i in range(num_episodes):
-                        print(answer + str(i+1) + ": " + agents_data[i][0] + "File: " + agents_data[i][1])
-                    action = input()
-                    
-                    if action == "no":
-                        question_answered = True
-                    elif action == "save":
-                        with h5py.File(agent_save_path, "w") as hdf:
-                            hdf.create_dataset("agent1", data = agents[0])
-
-                    elif action.isdigit():
-                        action = int(action)
-                        if action > 0 and action <= num_episodes:
-                            q_table = agents[action-1]
-                            question_answered = True
-                        else:
-                            print(answer + "This agent does NOT exist!" + new_line)
-                print(new_line)
 
             elif action == "close":
                 programming_running = False
@@ -86,14 +80,10 @@ class HumanPlayer:
                 state = game.reset()
 
                 while not(game_over):
-                    action = input(question + "What do you want to do?" + 2 * new_line)
+                    action = input(question + "How do you want to play this?" + 2 * new_line)
                     print("")                
 
-                    if action == "new":
-                        q_table = np.zeros((game.state_space(), game.action_space()))
-                        print(answer + "New Q-Table created!" + 2 * new_line)
-
-                    elif action == "on":
+                    if action == "on":
                             advised_learning_enabled = True
                             print(answer + "All further moves will be used to improve the agent." + 2 * new_line)
 
@@ -105,12 +95,12 @@ class HumanPlayer:
                         print(answer + "Current state: " + str(game.getState()) + 2 * new_line)
 
                     elif action == "tip":
-                        pos_values, _ = self.get_highest_values(q_table, state)
+                        pos_values, _ = self.get_highest_values(self.q_table, state)
                         print(answer + "Agent suggests: " + pos_values + 2 * new_line)
 
                     elif action == "table":
-                            reward = np.argmax(q_table[state,:])
-                            print(self.print_q_table(q_table, state, indent, answer, new_line))               
+                            reward = np.argmax(self.q_table[state,:])
+                            print(self.print_q_table(self.q_table, state, indent, answer, new_line))               
 
                     elif action == "print":
                         print_advised_learning_results = True
@@ -119,7 +109,7 @@ class HumanPlayer:
                     elif "check" in action:
                         action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
                         if len(action) == 0:
-                            action = answer + "No digits found." + 2 * new_line
+                            action = self.no_digits_found(answer, new_line)
                         else:
                             action = action[0]
                             if action <= game.action_space():
@@ -132,7 +122,7 @@ class HumanPlayer:
                                 action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
                         print(action)
 
-                    elif action == "hint":
+                    elif action == "cheat":
                         for i in range(board_size + 1, game.action_space()):                        
                             _, _, _, info = game.step(i, False)
                             # print(str(i) + ": " + str(info[0]))
@@ -152,7 +142,7 @@ class HumanPlayer:
                         print(indent + "------ Match aborted ------" + 2 * new_line)
 
                     elif action == "pass":
-                            action = str(np.argmax(q_table[state,:]))
+                            action = str(np.argmax(self.q_table[state,:]))
                             print(answer + "Agent's step: " + action + 2 * new_line)
 
                     if action.isdigit():
@@ -162,8 +152,8 @@ class HumanPlayer:
                             new_state, reward, game_over, info = game.step(action)
 
                             if advised_learning_enabled:    # Update Q-table
-                                q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
-                                learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
+                                self.q_table[state, action] = self.q_table[state, action] * (1 - learning_rate) + \
+                                learning_rate * (reward + discount_rate * np.max(self.q_table[new_state, :]))
 
                             if print_advised_learning_results:
                                 print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
@@ -183,7 +173,100 @@ class HumanPlayer:
                     user_keeps_playing = False
                     print(new_line + indent + "******* See you *******" + 2 * new_line)                
 
+    def train_new_agents(self, board, simulation_settings, logging_settings):
+        num_episodes = simulation_settings[1]
+        for simulation_episode in range(num_episodes):
+            simulation = Simulation()
+            simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
+            self.agents.append(simulation.getAgent())
+            self.agents_data.append(simulation.get_logging_data())        
 
+    def show_results(self, indent, answer, new_line):
+        if len(self.agents_data) == 0:
+            print(indent + "No agents were send to the trainings camp, yet." + new_line)
+        else:
+            print(indent + "Here are the newly trained agents: " + new_line)
+            for i in range(len(self.agents_data)):
+                print("=====>  " + str(i+1) + ": " + self.agents_data[i][0] + "File: " + self.agents_data[i][1])
+        print(new_line)
+
+
+    def use_trained_agent(self, digit, answer, new_line):
+        if digit >= 0 and digit < len(self.agents):
+            self.q_table = self.agents[digit]
+        else:
+            print(answer + "This agent does NOT exist!" + 2*new_line)
+
+
+    def view_agents(self, agent_save_path, answer, new_line):
+        with h5py.File(agent_save_path, "r") as hdf:
+            agent_count = len(list(hdf.keys()))
+            if agent_count == 0:
+                print(answer + "No agents have been saved, yet." + new_line)
+            else:
+                print("Available agents: ")
+                for i in range(agent_count):
+                    print(answer + str(i+1))
+        print(new_line)
+
+
+    def load_agent(self, agent_save_path, digit, answer, new_line):
+        with h5py.File(agent_save_path, "r") as hdf:
+            agent_count = len(list(hdf.keys()))
+            if digit >= 0 and digit < agent_count:
+                loaded_agent = hdf.get(str(digit))
+                print(answer + "Agent " + str(digit + 1) + " has been loaded." + 2*new_line)
+                return np.array(loaded_agent)
+            else:
+                print(answer + "The agent you are looking for does not exist." + 2*new_line)
+                return None
+
+    
+    def save_agent(self, agent_save_path, digit, answer, new_line):
+        temp_agents = []
+        message = answer
+
+        with h5py.File(agent_save_path, "r") as hdf:        
+            agent_count = len(list(hdf.keys()))
+            for i in range(agent_count):
+                temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
+
+        if isinstance(digit, bool):
+            temp_agents.append(self.q_table)
+            message += "The currently used agent has been saved." + 2*new_line
+        elif digit >= 0 and digit < len(self.agents):
+            temp_agents.append(self.agents[digit])
+            message += "The trained agent " + str(digit + 1) + " has been saved." + 2*new_line
+        else:
+            message += "The agent you wanted to save does not exist." + 2*new_line
+
+        with h5py.File(agent_save_path, "w") as hdf:
+            for k in range(len(temp_agents)):
+                hdf.create_dataset(str(k), data = temp_agents[k])
+        print(message)
+
+
+    def delete_agent(self, agent_save_path, digit, answer, new_line):
+        temp_agents = []
+        message = answer
+
+        with h5py.File(agent_save_path, "r") as hdf:        
+            agent_count = len(list(hdf.keys()))
+            for i in range(agent_count):
+                temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
+       
+        if digit >= 0 and digit < len(self.agents):
+            temp_agents.append(self.agents[digit])
+            message += "The trained agent " + str(digit + 1) + " has been saved." + 2*new_line
+        else:
+            message += "The agent you wanted to save does not exist." + 2*new_line
+
+        with h5py.File(agent_save_path, "w") as hdf:
+            for k in range(len(temp_agents)):
+                hdf.create_dataset(str(k), data = temp_agents[k])
+        print(message)
+
+            
     def print_board(self, board, indent):
         board_print = ""
         for x in range(len(board)):
@@ -234,3 +317,7 @@ class HumanPlayer:
             msg_for_user += "++ Your move was valid ++"
 
         return msg_for_user + "\n\n"
+
+
+    def no_digits_found(self, answer, new_line):
+        return answer + "No digits found." + 2 * new_line
