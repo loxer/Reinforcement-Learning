@@ -1,9 +1,9 @@
 from game import *
 from humanPlayer import *
 
-# Simulation Settings
+# Training Settings
 board_size = 6
-num_simulations = 2
+num_simulations = 1
 num_episodes_per_simulation = 30000
 max_steps_per_episode = 1000
 
@@ -25,6 +25,9 @@ reward_lost = -1
 log_notes = "No more min_exploration_rate and Negative Rewards (for losing), only"
 statistics_separation_counter = 2500
 
+# Saving Settings
+log_save_path = "Checkers\\Logs\\Version_"
+agent_save_path = "Checkers\\agents.hdf5"
 
 # Storing Settings in Lists
 simulation_settings = [board_size, num_simulations, num_episodes_per_simulation, max_steps_per_episode, learning_rate, discount_rate, 
@@ -32,7 +35,7 @@ simulation_settings = [board_size, num_simulations, num_episodes_per_simulation,
 
 reward_settings = [reward_valid_step, reward_milestone, reward_won, reward_lost]
 
-logging_settings = [log_notes, statistics_separation_counter]
+logging_settings = [log_notes, statistics_separation_counter, log_save_path]
 
 
 # Create a board
@@ -41,4 +44,4 @@ board = Game(board_size, reward_settings)
 
 # Start the programm
 controller = HumanPlayer(board_size)
-controller.start(board, simulation_settings, logging_settings)
+controller.start(board, simulation_settings, logging_settings, agent_save_path)

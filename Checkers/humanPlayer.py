@@ -1,5 +1,6 @@
 from simulation import *
 import numpy as np
+import h5py
 
 
 class HumanPlayer:
@@ -7,7 +8,7 @@ class HumanPlayer:
         self.size = size
 
 
-    def start(self, board, simulation_settings, logging_settings):
+    def start(self, board, simulation_settings, logging_settings, agent_save_path):
         game = board
         q_table = np.zeros((game.state_space(), game.action_space()))
         
@@ -21,7 +22,7 @@ class HumanPlayer:
         question_answered = False
         advised_learning_enabled = False
         print_advised_learning_results = False
-
+        
 
         new_line = "\n"
         indent = "         "        
@@ -36,8 +37,17 @@ class HumanPlayer:
 
             if action == "play":
                 user_keeps_playing = True
+                game_over = False
 
-            if action == "train":
+            elif action == "load":
+                with h5py.File(agent_save_path, "r") as hdf:
+                    agent_list = list(hdf.keys())
+                    print("Available agents: ")
+                    print(agent_list)
+                    loaded_agent = hdf.get("agent1")
+                    q_table = np.array(loaded_agent)
+
+            elif action == "train":
                 agents = []
                 agents_data = []
                 num_episodes = simulation_settings[1]
@@ -55,6 +65,10 @@ class HumanPlayer:
                     
                     if action == "no":
                         question_answered = True
+                    elif action == "save":
+                        with h5py.File(agent_save_path, "w") as hdf:
+                            hdf.create_dataset("agent1", data = agents[0])
+
                     elif action.isdigit():
                         action = int(action)
                         if action > 0 and action <= num_episodes:
@@ -64,7 +78,7 @@ class HumanPlayer:
                             print(answer + "This agent does NOT exist!" + new_line)
                 print(new_line)
 
-            if action == "close":
+            elif action == "close":
                 programming_running = False
 
 
@@ -165,7 +179,7 @@ class HumanPlayer:
                     game_over = False
                     print(game_started)
 
-                if action == "no":
+                elif action == "no":
                     user_keeps_playing = False
                     print(new_line + indent + "******* See you *******" + 2 * new_line)                
 

@@ -70,9 +70,9 @@ class Logger:
 
     def writeToFile(self, version, startingTime, size, logMessage):        
         valid_steps_rate = "__" + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100)#.replace('.' , '-')
-        win_rate = "__" + "{0:.3f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
+        win_rate = "__" + "{0:.2f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
         file_format = ".txt"
-        FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
+        FILE = "Checkers\\Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
         self.FILE = FILE
