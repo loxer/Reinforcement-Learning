@@ -3,38 +3,32 @@ import numpy as np
 import random
 import time
 import timeit
-#from IPython.display import clear_output
 
 class Trainer:
     def __init__(self):
         self.logger = ""
 
 
-    def getAgent(self):
-        return self.q_table
-
-
-    def run(self, board, simulation_settings, logging_settings, current_simulation_episode, q_table = False):        
-        board_size = simulation_settings[0]
-        num_simulations = str(simulation_settings[1])
-
-        env = board     # change that later
-        action_space_size = env.action_space()
-        state_space_size = env.state_space()
+    def run(self, board, training_settings, logging_settings, current_training_episode, q_table = False):        
+        board_size = training_settings[0]
+        num_trainings = str(training_settings[1])
+        
+        action_space_size = board.action_space()
+        state_space_size = board.state_space()
 
         if isinstance(q_table, bool):
             q_table = np.zeros((state_space_size, action_space_size))
 
-        num_episodes = simulation_settings[2]
-        max_steps_per_episode = simulation_settings[3]
+        num_episodes = training_settings[2]
+        max_steps_per_episode = training_settings[3]
 
-        learning_rate = simulation_settings[4]
-        discount_rate = simulation_settings[5]
+        learning_rate = training_settings[4]
+        discount_rate = training_settings[5]
 
-        start_exploration_rate = exploration_rate = simulation_settings[6]
-        max_exploration_rate = simulation_settings[7]
-        min_exploration_rate = float(simulation_settings[8])
-        exploration_decay_rate = float(simulation_settings[9])
+        start_exploration_rate = exploration_rate = training_settings[6]
+        max_exploration_rate = training_settings[7]
+        min_exploration_rate = float(training_settings[8])
+        exploration_decay_rate = float(training_settings[9])
 
         rewards_all_episodes = []
         invalid_steps_all_episodes = []
@@ -42,14 +36,14 @@ class Trainer:
         milestones_all_episodes = []
         wins_of_all_episodes = []
 
-        self.print_simulation_starter(current_simulation_episode, num_simulations)
+        self.print_training_starter(current_training_episode, num_trainings)
         startingTime = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime()) # thx to Metalshark: https://stackoverflow.com/questions/3220284/how-to-customize-the-time-format-for-python-logging
-        print("\n\nSimulation started at: " + startingTime + "\n")
+        print("\n\nTraining started at: " + startingTime + "\n\n")
         timeMeasurement = timeit.default_timer()
 
         # Q-learning algorithm
         for episode in range(num_episodes):
-            state = env.reset()
+            state = board.reset()
             done = False
             rewards_current_episode = 0
             valid_steps_current_episode = 0
@@ -64,10 +58,10 @@ class Trainer:
                 if exploration_rate_threshold > exploration_rate:
                     action = np.argmax(q_table[state,:])
                 else:
-                    action = env.action_space_sample()
+                    action = board.action_space_sample()
                     
                 # Take new action
-                new_state, reward, done, info = env.step(action)
+                new_state, reward, done, info = board.step(action)
                 
                 # Update Q-table
                 q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
@@ -120,25 +114,28 @@ class Trainer:
 
 
         # From here the logging starts
-        gameInformation = env.getLoggingInformation()        
+        gameInformation = board.getLoggingInformation()        
         endingTime = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())        
 
-        simulationInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
-                                exploration_rate, simulation_settings[9], max_exploration_rate, simulation_settings[8], start_exploration_rate, logging_settings[0],
-                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_simulation_episode, num_simulations, endingTime]
+        trainingInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
+                                exploration_rate, training_settings[9], max_exploration_rate, training_settings[8], start_exploration_rate, logging_settings[0],
+                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_training_episode, num_trainings, endingTime]
         
-        self.logger = Logger(gameInformation, simulationInformation)
+        self.logger = Logger(gameInformation, trainingInformation)
         self.logger.createLog()
-
         self.q_table = q_table
 
 
-    def print_simulation_starter(self, current_simulation_episode, num_simulations):
-        print("\n")
-        print("                  ******************************************\n")
-        print("                  ***** SIMULATION EPISODE " + current_simulation_episode + "/" + num_simulations + " STARTED *****\n")
-        print("                  ******************************************\n\n")
+    def getAgent(self):
+        return self.q_table
 
 
     def get_logging_data(self):
         return self.logger.getData()
+
+
+    def print_training_starter(self, current_training_episode, num_trainings):
+        print("\n")
+        print("                  ******************************************\n")
+        print("                  ****** TRAINING EPISODE " + current_training_episode + "/" + num_trainings + " STARTED ******\n")
+        print("                  ******************************************\n\n")

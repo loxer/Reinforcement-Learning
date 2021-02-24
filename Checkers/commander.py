@@ -14,13 +14,13 @@ class Commander:
         self.game_over = False
 
 
-    def start(self, board, simulation_settings, logging_settings, agent_save_path):
+    def start(self, board, training_settings, logging_settings, agent_save_path):
         game = board
         self.q_table = np.zeros((game.state_space(), game.action_space()))
         
-        board_size = simulation_settings[0]
-        learning_rate = simulation_settings[4]
-        discount_rate = simulation_settings[5]
+        board_size = training_settings[0]
+        learning_rate = training_settings[4]
+        discount_rate = training_settings[5]
 
         advised_learning_enabled = False
         print_advised_learning_results = False
@@ -31,7 +31,7 @@ class Commander:
         answer = indent + "=====>  "
         game_started = 2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent)
 
-        print(self.print_programm_started(new_line))
+        self.print_programm_started(new_line)
 
         while self.programming_running:
             action = input(question + "What do you want to do?" + 2 * new_line)
@@ -45,11 +45,11 @@ class Commander:
                 self.view_agents(agent_save_path, answer, new_line)
 
             elif action == "train new":
-                self.train_new_agents(board, simulation_settings, logging_settings)
+                self.train_new_agents(board, training_settings, logging_settings)
                 self.show_results(indent, answer, new_line)
 
             elif action == "train current":
-                self.train_new_agents(board, simulation_settings, logging_settings, self.q_table)
+                self.train_new_agents(board, training_settings, logging_settings, self.q_table)
                 self.show_results(indent, answer, new_line)
 
             elif action == "results":
@@ -192,11 +192,11 @@ class Commander:
 
 
 
-    def train_new_agents(self, board, simulation_settings, logging_settings, q_table = False):
-        num_episodes = simulation_settings[1]
-        for simulation_episode in range(num_episodes):
+    def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
+        num_episodes = training_settings[1]
+        for training_episode in range(num_episodes):
             trainer = Trainer()
-            trainer.run(board, simulation_settings, logging_settings, str(simulation_episode + 1), q_table)
+            trainer.run(board, training_settings, logging_settings, str(training_episode + 1), q_table)
             self.agents.append(trainer.getAgent())
             self.agents_data.append(trainer.get_logging_data())        
 
@@ -358,6 +358,6 @@ class Commander:
     
     def print_programm_started(self, new_line):
         print(new_line)
-        print("                  ***********************************************" + new_line)
-        print("                  ***** WELCOME TO MY REINFORCEMENT PROJECT *****" + new_line)
-        print("                  ***********************************************" + 2*new_line)
+        print("                  *************************************************" + new_line)
+        print("                  ****** WELCOME TO MY REINFORCEMENT PROJECT ******" + new_line)
+        print("                  *************************************************" + 2*new_line)
