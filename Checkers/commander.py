@@ -29,15 +29,19 @@ class Commander:
         indent = "         "        
         question = indent + "¿¿¿ "
         answer = indent + "=====>  "
+        options = indent + "(options)" + 2 * new_line
         game_started = 2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent)
 
         self.print_programm_started(new_line)
 
         while self.programming_running:
-            action = input(question + "What do you want to do?" + 2 * new_line)
+            action = input(question + "What do you want to do?" + options)
             print(new_line)
 
-            if action == "new":
+            if action == "options":
+                self.show_options(self.get_program_options(), indent, new_line)
+
+            elif action == "new":
                 self.q_table = np.zeros((game.state_space(), game.action_space()))
                 print(answer + "New agent has been recruited!" + 2 * new_line)
 
@@ -104,14 +108,17 @@ class Commander:
 
 
                 while not(self.game_over):
-                    action = input(question + "How do you want to play this?" + 2 * new_line)
+                    action = input(question + "How do you want to play this?" + options)
                     print("")                
 
-                    if action == "learning on":
+                    if action == "options":
+                        self.show_options(self.get_game_options(), indent, new_line)
+
+                    elif action == "learn on":
                             advised_learning_enabled = True
                             print(answer + "All further moves will be used to improve the agent." + 2 * new_line)
 
-                    elif action == "learning off":
+                    elif action == "learn off":
                         advised_learning_enabled = False
                         print(answer + "Agent will not learn from further moves." + 2 * new_line)
                     
@@ -126,9 +133,13 @@ class Commander:
                             reward = np.argmax(self.q_table[state,:])
                             print(self.print_q_table(self.q_table, state, indent, answer, new_line))               
 
-                    elif action == "print":
+                    elif action == "print on":
                         print_advised_learning_results = True
                         print(answer + "Reward and state will be printed now." + 2 * new_line)
+
+                    elif action == "print off":
+                        print_advised_learning_results = False
+                        print(answer + "Reward and state will NOT be printed." + 2 * new_line)
 
                     elif "check" in action:
                         action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
@@ -152,10 +163,6 @@ class Commander:
                             if info[0] == True:
                                 print(answer + "A valid move will be: " + str(i) + 2 * new_line)
                                 break
-
-                    elif action == "print off":
-                        print_advised_learning_results = False
-                        print(answer + "Reward and state will NOT be printed." + 2 * new_line)
 
                     elif action == "board":
                         print(self.print_board(game.getBoard(), indent))
@@ -190,6 +197,32 @@ class Commander:
                             print(self.print_board(game.getBoard(), indent))
                             print(indent + self.move_message(info))
 
+
+    def show_options(self, options, answer, new_line):        
+        
+        blank = " "
+        max_chars_of_explanations_per_line = 71
+        max_chars_to_explanations = 20
+
+        print(answer + "Here are all your options:" + new_line)
+        for i in range(len(options)):
+            number_of_blanks = max_chars_to_explanations - len(options[i][0])
+            message = options[i][0] + blank * number_of_blanks
+
+            explanation_word_list = options[i][1].split()
+            remaining_chars_per_line = max_chars_of_explanations_per_line
+
+            for k in range(len(explanation_word_list)):
+                number_of_chars_in_word = len(explanation_word_list[k]) + 1  # for blanks after each word
+                if remaining_chars_per_line - number_of_chars_in_word >= 0:
+                    message += explanation_word_list[k] + blank
+                    remaining_chars_per_line -= number_of_chars_in_word
+                else:
+                    message += new_line + max_chars_to_explanations * blank + explanation_word_list[k] + blank
+                    remaining_chars_per_line = max_chars_of_explanations_per_line - number_of_chars_in_word
+            
+            print(message + new_line)
+        print(new_line)
 
 
     def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
@@ -361,3 +394,42 @@ class Commander:
         print("                  *************************************************" + new_line)
         print("                  ****** WELCOME TO MY REINFORCEMENT PROJECT ******" + new_line)
         print("                  *************************************************" + 2*new_line)
+
+
+    def get_program_options(self):
+        program_options = [
+            ["#","At options with a hashtag, you have to replace it with a digit to select the desired agent."],
+            ["agents", "Shows you all the saved agents."],
+            ["clear","Deleting all the newly trained agents and its results of this session. Logs will not be removed."],
+            ["close","Ends the current session and closes the program."],
+            ["delete #","Deletes the selected saved agent."],
+            ["load #","Loads the selected trained agent and puts that one in charge. Available agents can be seen in 'agents'. All further operations in 'play' will be done on this agent."],
+            ["play","Go into play mode. You can use your currently in charge agent and experiement with it."],
+            ["results","Shows the results of the trainings of this session."],            
+            ["save #","Saves the selected trained agent and can be loaded at another session."],
+            ["save current","Saves the currently in charge agent."],
+            ["train new", "Trains a new agent by using all the prepared settings."],
+            ["train current", "Sends the currently used agent to the training by using all the prepared settings."],
+            ["use #","Puts the selected trained agent in charge. Available agents can be seen in 'results'. All further operations in 'play' will be done on this agent. Use 'save current' to save the progress of this agent for another session."]
+        ]        
+        return program_options
+
+
+    def get_game_options(self):
+        game_options = [
+            ["#","Enter a digit to make a step on the board."],
+            ["board","Shows you the current state of the board."],
+            ["cheat","Gives you a valid step."],
+            ["check #","Enter 'check' + a digit to check, if that step would be valid or not."],
+            ["close","Ends the current session and closes the program."],
+            ["learn off","Currently in charge agent does NOT learn from any steps made from now on. This is the default option, when the program has started."],
+            ["learn on","Currently in charge agent learns from any steps made from now on."],            
+            ["pass","The agent will make a step, which it believes is the best one."],
+            ["print off","At each step, the gained reward and state will NOT be printed, anymore. This is the default option, when the program has started."],
+            ["print on","At each step, the gained reward and state will be printed."],
+            ["state","Gives you the current state of the board."],
+            ["stop","Stops the current game and you get back to the program options."],
+            ["table","This prints all entries of the currently in charge agent for the current state."],
+            ["tip","The currently in charge agent suggests the best steps it knows about."]
+        ]
+        return game_options
