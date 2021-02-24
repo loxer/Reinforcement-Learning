@@ -39,17 +39,24 @@ class HumanPlayer:
 
             if action == "new":
                 self.q_table = np.zeros((game.state_space(), game.action_space()))
-                print(answer + "New Q-Table created!" + 2 * new_line)
+                print(answer + "New agent has been recruited!" + 2 * new_line)
 
             elif action == "agents":
                 self.view_agents(agent_save_path, answer, new_line)
 
-            elif action == "train":
+            elif action == "train new":
                 self.train_new_agents(board, simulation_settings, logging_settings)
+                self.show_results(indent, answer, new_line)
+
+            elif action == "train current":
+                self.train_new_agents(board, simulation_settings, logging_settings, self.q_table)
                 self.show_results(indent, answer, new_line)
 
             elif action == "results":
                 self.show_results(indent, answer, new_line)
+
+            elif action == "clear":
+                self.clear_trained_agents(answer, new_line)
 
             elif action == "save current":
                 self.save_agent(agent_save_path, False, answer, new_line)
@@ -69,11 +76,9 @@ class HumanPlayer:
                     elif "use" in action:
                         self.use_trained_agent(digit, answer, new_line)
 
-
             elif action == "play":
                 self.user_keeps_playing = True
                 self.game_over = False
-
 
             elif action == "close":
                 self.close_programm(indent, new_line)
@@ -102,11 +107,11 @@ class HumanPlayer:
                     action = input(question + "How do you want to play this?" + 2 * new_line)
                     print("")                
 
-                    if action == "on":
+                    if action == "learning on":
                             advised_learning_enabled = True
                             print(answer + "All further moves will be used to improve the agent." + 2 * new_line)
 
-                    elif action == "off":
+                    elif action == "learning off":
                         advised_learning_enabled = False
                         print(answer + "Agent will not learn from further moves." + 2 * new_line)
                     
@@ -187,11 +192,11 @@ class HumanPlayer:
 
 
 
-    def train_new_agents(self, board, simulation_settings, logging_settings):
+    def train_new_agents(self, board, simulation_settings, logging_settings, q_table = False):
         num_episodes = simulation_settings[1]
         for simulation_episode in range(num_episodes):
             simulation = Simulation()
-            simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
+            simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1), q_table)
             self.agents.append(simulation.getAgent())
             self.agents_data.append(simulation.get_logging_data())        
 
@@ -206,9 +211,16 @@ class HumanPlayer:
         print(new_line)
 
 
+    def clear_trained_agents(self, answer, new_line):
+        self.agents = []
+        self.agents_data = []
+        print(answer + "All trained agents are fired." + 2*new_line)
+
+
     def use_trained_agent(self, digit, answer, new_line):
         if digit >= 0 and digit < len(self.agents):
             self.q_table = self.agents[digit]
+            print(answer + "Agent " + str(digit + 1) + " is waiting for action!" + 2*new_line)
         else:
             print(answer + "This agent does NOT exist!" + 2*new_line)
 
@@ -249,17 +261,17 @@ class HumanPlayer:
 
         if isinstance(digit, bool):
             temp_agents.append(self.q_table)
-            message += "The currently used agent has been saved." + 2*new_line
+            message += "The currently used agent has been saved as agent " + str(len(temp_agents)) + "."
         elif digit >= 0 and digit < len(self.agents):
             temp_agents.append(self.agents[digit])
-            message += "The trained agent " + str(digit + 1) + " has been saved." + 2*new_line
+            message += "The trained agent " + str(digit + 1) + " has been saved as agent " + str(len(temp_agents)) + "."
         else:
-            message += "The agent you wanted to save does not exist." + 2*new_line
+            message += "The agent you wanted to save does not exist."
 
         with h5py.File(agent_save_path, "w") as hdf:
             for k in range(len(temp_agents)):
                 hdf.create_dataset(str(k), data = temp_agents[k])
-        print(message)
+        print(message + 2*new_line)
 
 
     def delete_agent(self, agent_save_path, digit, answer, new_line):
@@ -304,7 +316,7 @@ class HumanPlayer:
 
     def close_programm(self, indent, new_line):
         self.programming_running = self.user_keeps_playing = self.game_over = False
-        print(new_line + indent + "******* See you *******" + 2 * new_line)
+        print(new_line + indent + "********************* SEE YOU *********************" + 3 * new_line)
 
 
     def print_board(self, board, indent):

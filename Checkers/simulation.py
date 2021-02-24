@@ -14,14 +14,16 @@ class Simulation:
         return self.q_table
 
 
-    def run(self, board, simulation_settings, logging_settings, current_simulation_episode):        
+    def run(self, board, simulation_settings, logging_settings, current_simulation_episode, q_table = False):        
         board_size = simulation_settings[0]
         num_simulations = str(simulation_settings[1])
 
         env = board     # change that later
         action_space_size = env.action_space()
         state_space_size = env.state_space()
-        q_table = np.zeros((state_space_size, action_space_size))
+
+        if isinstance(q_table, bool):
+            q_table = np.zeros((state_space_size, action_space_size))
 
         num_episodes = simulation_settings[2]
         max_steps_per_episode = simulation_settings[3]
