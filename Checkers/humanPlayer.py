@@ -9,6 +9,9 @@ class HumanPlayer:
         self.agents = []
         self.agents_data = []
         self.q_table = 0
+        self.programming_running = True
+        self.user_keeps_playing = False
+        self.game_over = False
 
 
     def start(self, board, simulation_settings, logging_settings, agent_save_path):
@@ -19,10 +22,6 @@ class HumanPlayer:
         learning_rate = simulation_settings[4]
         discount_rate = simulation_settings[5]
 
-        programming_running = True
-        user_keeps_playing = False
-        game_over = False
-        # question_answered = False
         advised_learning_enabled = False
         print_advised_learning_results = False
         
@@ -32,10 +31,11 @@ class HumanPlayer:
         answer = indent + "=====>  "
         game_started = 2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent)
 
-        print(game_started)
-        while programming_running:
+        print(self.print_programm_started(new_line))
+
+        while self.programming_running:
             action = input(question + "What do you want to do?" + 2 * new_line)
-            print("")
+            print(new_line)
 
             if action == "new":
                 self.q_table = np.zeros((game.state_space(), game.action_space()))
@@ -54,32 +54,51 @@ class HumanPlayer:
             elif action == "save current":
                 self.save_agent(agent_save_path, False, answer, new_line)
 
-            elif "load" in action or "save" in action or "use" in action:
+            elif "load" in action or "save" in action or "delete" in action or "use" in action:
                 digit = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
                 if len(digit) == 0:
                     action = self.no_digits_found(answer, new_line)
                 else:
                     digit = digit[0] - 1
                     if "load" in action:
-                        self.q_table = self.load_agent(agent_save_path, digit, answer, new_line)
+                        self.q_table = self.load_agent(agent_save_path, digit, answer, new_line, True)
                     elif "save" in action:
                         self.save_agent(agent_save_path, digit, answer, new_line)
+                    elif "delete" in action:
+                        self.delete_agent(agent_save_path, digit, answer, new_line)
                     elif "use" in action:
                         self.use_trained_agent(digit, answer, new_line)
 
+
             elif action == "play":
-                user_keeps_playing = True
-                game_over = False
+                self.user_keeps_playing = True
+                self.game_over = False
 
 
             elif action == "close":
-                programming_running = False
+                self.close_programm(indent, new_line)
 
 
-            while user_keeps_playing:
+            while self.user_keeps_playing:
+                print(game_started)
                 state = game.reset()
 
-                while not(game_over):
+                if self.game_over:
+                    action = input(new_line + question + "Another round?" + indent + "(yes/no/close)" + new_line)
+
+                    if action == "yes":
+                        self.game_over = False
+                        print(game_started)
+
+                    elif action == "no":
+                        self.user_keeps_playing = False
+                        print(new_line)
+
+                    elif action == "close":
+                        self.close_programm(indent, new_line)
+
+
+                while not(self.game_over):
                     action = input(question + "How do you want to play this?" + 2 * new_line)
                     print("")                
 
@@ -125,7 +144,6 @@ class HumanPlayer:
                     elif action == "cheat":
                         for i in range(board_size + 1, game.action_space()):                        
                             _, _, _, info = game.step(i, False)
-                            # print(str(i) + ": " + str(info[0]))
                             if info[0] == True:
                                 print(answer + "A valid move will be: " + str(i) + 2 * new_line)
                                 break
@@ -138,18 +156,22 @@ class HumanPlayer:
                         print(self.print_board(game.getBoard(), indent))
 
                     elif action == "stop":
-                        game_over = True
+                        self.game_over = True
+                        self.user_keeps_playing = False
                         print(indent + "------ Match aborted ------" + 2 * new_line)
+
+                    elif action == "close":
+                        self.close_programm(indent, new_line)
 
                     elif action == "pass":
                             action = str(np.argmax(self.q_table[state,:]))
                             print(answer + "Agent's step: " + action + 2 * new_line)
-
+                    
                     if action.isdigit():
                         action = int(action)
 
                         if action <= game.action_space():
-                            new_state, reward, game_over, info = game.step(action)
+                            new_state, reward, self.game_over, info = game.step(action)
 
                             if advised_learning_enabled:    # Update Q-table
                                 self.q_table[state, action] = self.q_table[state, action] * (1 - learning_rate) + \
@@ -164,14 +186,6 @@ class HumanPlayer:
                             print(indent + self.move_message(info))
 
 
-                action = input(new_line + question + "Another round?" + indent + "(yes/no)" + new_line)
-                if action == "yes":
-                    game_over = False
-                    print(game_started)
-
-                elif action == "no":
-                    user_keeps_playing = False
-                    print(new_line + indent + "******* See you *******" + 2 * new_line)                
 
     def train_new_agents(self, board, simulation_settings, logging_settings):
         num_episodes = simulation_settings[1]
@@ -180,6 +194,7 @@ class HumanPlayer:
             simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1))
             self.agents.append(simulation.getAgent())
             self.agents_data.append(simulation.get_logging_data())        
+
 
     def show_results(self, indent, answer, new_line):
         if len(self.agents_data) == 0:
@@ -210,12 +225,13 @@ class HumanPlayer:
         print(new_line)
 
 
-    def load_agent(self, agent_save_path, digit, answer, new_line):
+    def load_agent(self, agent_save_path, digit, answer, new_line, print_message = False):
         with h5py.File(agent_save_path, "r") as hdf:
             agent_count = len(list(hdf.keys()))
             if digit >= 0 and digit < agent_count:
                 loaded_agent = hdf.get(str(digit))
-                print(answer + "Agent " + str(digit + 1) + " has been loaded." + 2*new_line)
+                if print_message:
+                    print(answer + "Agent " + str(digit + 1) + " has been loaded." + 2*new_line)
                 return np.array(loaded_agent)
             else:
                 print(answer + "The agent you are looking for does not exist." + 2*new_line)
@@ -255,34 +271,16 @@ class HumanPlayer:
             for i in range(agent_count):
                 temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
        
-        if digit >= 0 and digit < len(self.agents):
-            temp_agents.append(self.agents[digit])
-            message += "The trained agent " + str(digit + 1) + " has been saved." + 2*new_line
+        if digit >= 0 and digit < len(temp_agents):
+            del temp_agents[digit]
+            message += "The agent " + str(digit + 1) + " has been deleted." + 2*new_line
         else:
-            message += "The agent you wanted to save does not exist." + 2*new_line
+            message += "The agent you wanted to delete does not exist." + 2*new_line
 
         with h5py.File(agent_save_path, "w") as hdf:
             for k in range(len(temp_agents)):
                 hdf.create_dataset(str(k), data = temp_agents[k])
         print(message)
-
-            
-    def print_board(self, board, indent):
-        board_print = ""
-        for x in range(len(board)):
-            board_print += 2 * indent + str(board[x]) + "\n"
-        return board_print
-
-
-    def print_q_table(self, q_table, state, indent, answer, new_line):
-        q_table_print = answer + "All q_table data at state " + str(state) + ":" + 2*new_line
-        for i in range(len(q_table[state,:])):
-            q_table_print += indent + str(i) + ".: " + str(q_table[state,i]) + new_line
-        
-        pos_values, highest_value = self.get_highest_values(q_table, state)
-        q_table_print += new_line + answer + "Highest value is " + str(highest_value) + " and can be found at position(s): " + pos_values + 2*new_line
-
-        return q_table_print
 
 
     def get_highest_values(self, q_table, state):
@@ -304,6 +302,29 @@ class HumanPlayer:
         return pos_values, highest_value
 
 
+    def close_programm(self, indent, new_line):
+        self.programming_running = self.user_keeps_playing = self.game_over = False
+        print(new_line + indent + "******* See you *******" + 2 * new_line)
+
+
+    def print_board(self, board, indent):
+        board_print = ""
+        for x in range(len(board)):
+            board_print += 2 * indent + str(board[x]) + "\n"
+        return board_print
+
+
+    def print_q_table(self, q_table, state, indent, answer, new_line):
+        q_table_print = answer + "All q_table data at state " + str(state) + ":" + 2*new_line
+        for i in range(len(q_table[state,:])):
+            q_table_print += indent + str(i) + ".: " + str(q_table[state,i]) + new_line
+        
+        pos_values, highest_value = self.get_highest_values(q_table, state)
+        q_table_print += new_line + answer + "Highest value is " + str(highest_value) + " and can be found at position(s): " + pos_values + 2*new_line
+
+        return q_table_print
+
+
     def move_message(self, info):
         msg_for_user = ""
 
@@ -321,3 +342,10 @@ class HumanPlayer:
 
     def no_digits_found(self, answer, new_line):
         return answer + "No digits found." + 2 * new_line
+
+    
+    def print_programm_started(self, new_line):
+        print(new_line)
+        print("                  ***********************************************" + new_line)
+        print("                  ***** WELCOME TO MY REINFORCEMENT PROJECT *****" + new_line)
+        print("                  ***********************************************" + 2*new_line)
