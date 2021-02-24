@@ -37,7 +37,6 @@ class Game:
                     #     self.board[x,y] = 3
                     #     self.stonesPlayer1 += 1
         self.stonesPerPlayer = self.stonesPlayer1
-        # print(self.board)
 
 
     def clearBoard(self):
@@ -58,8 +57,7 @@ class Game:
             for y in range(self.size):
                     if self.board[x,y] == 1:                        
                         y_calc = y // 2                                   
-                        new_state += pow(2, x * self.size // 2 + y_calc)  # new state is calculated from binary-to-decimal (board array is in decimal, states are in decimal)
-                        # print(str(x) + "/" + str(y) + " | " + str(x) + "/" + str(y_calc) + " | Exponent: " + str(x * self.size // 2 + y_calc) + " | Current sum: " + str(new_state))
+                        new_state += pow(2, x * self.size // 2 + y_calc)  # new state is calculated from binary-to-decimal (board array is in binary, states are in decimal)
                         y += 1      # skip the white fields
         return new_state - 1
 
