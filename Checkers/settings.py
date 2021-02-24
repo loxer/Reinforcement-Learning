@@ -1,5 +1,5 @@
 from game import *
-from humanPlayer import *
+from commander import *
 
 # Training Settings
 board_size = 6
@@ -43,5 +43,5 @@ board = Game(board_size, reward_settings)
 
 
 # Start the programm
-controller = HumanPlayer(board_size)
-controller.start(board, simulation_settings, logging_settings, agent_save_path)
+commander = Commander(board_size)
+commander.start(board, simulation_settings, logging_settings, agent_save_path)

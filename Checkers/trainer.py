@@ -5,7 +5,7 @@ import time
 import timeit
 #from IPython.display import clear_output
 
-class Simulation:
+class Trainer:
     def __init__(self):
         self.logger = ""
 

@@ -1,9 +1,9 @@
-from simulation import *
+from trainer import *
 import numpy as np
 import h5py
 
 
-class HumanPlayer:
+class Commander:
     def __init__(self, size):
         self.size = size
         self.agents = []
@@ -195,10 +195,10 @@ class HumanPlayer:
     def train_new_agents(self, board, simulation_settings, logging_settings, q_table = False):
         num_episodes = simulation_settings[1]
         for simulation_episode in range(num_episodes):
-            simulation = Simulation()
-            simulation.run(board, simulation_settings, logging_settings, str(simulation_episode + 1), q_table)
-            self.agents.append(simulation.getAgent())
-            self.agents_data.append(simulation.get_logging_data())        
+            trainer = Trainer()
+            trainer.run(board, simulation_settings, logging_settings, str(simulation_episode + 1), q_table)
+            self.agents.append(trainer.getAgent())
+            self.agents_data.append(trainer.get_logging_data())        
 
 
     def show_results(self, indent, answer, new_line):
