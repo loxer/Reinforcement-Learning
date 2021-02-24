@@ -15,6 +15,8 @@ class Commander:
 
 
     def start(self, board, training_settings, logging_settings, agent_save_path):
+        with h5py.File(agent_save_path, "w"):    
+            pass    # just create a file for saving agents, if it doesn't exist already
         game = board
         self.q_table = np.zeros((game.state_space(), game.action_space()))
         
