@@ -1,10 +1,16 @@
 class Logger:
-    def __init__(self, gameInformation, simulationInformation):
+    def __init__(self, gameInformation, trainingInformation):
         self.gameInformation = gameInformation
-        self.simulationInformation = simulationInformation
+        self.trainingInformation = trainingInformation
         self.success_rate_overall_valid_steps = 0
         self.overall_milestone_rate = 0
         self.overall_win_rate = 0
+        self.statistic_string = ""
+        self.FILE = ""
+
+
+    def getData(self):
+        return self.statistic_string, self.FILE
 
 
     def getHeadline(self, headline):
@@ -50,20 +56,26 @@ class Logger:
         self.overall_milestone_rate = self.overall_milestone_rate / stonesPlayer / num_episodes
         self.overall_win_rate = self.overall_win_rate / num_episodes
 
-        logStatistics += newLine + "Valid Steps in Total: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
-        logStatistics += newLine + "Milestone Rate in Total: " + "{0:.2f}".format(self.overall_milestone_rate * 100) + " %"
-        logStatistics += newLine + "Winning Rate in Total: " + "{0:.3f}".format(self.overall_win_rate * 100) + " %"
+        valid_steps_total = "Valid Steps Rate: " + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100) + " %"
+        milestones_total = "Milestone Rate: " + "{0:.2f}".format(self.overall_milestone_rate * 100) + " %"
+        wins_total = "Winning Rate: " + "{0:.2f}".format(self.overall_win_rate * 100) + " %"
 
+        logStatistics += newLine + "Total " + valid_steps_total
+        logStatistics += newLine + "Total " + milestones_total
+        logStatistics += newLine + "Total " + wins_total
+
+        self.statistic_string = infoSeparator + valid_steps_total + infoSeparator + milestones_total + infoSeparator + wins_total + infoSeparator
         return logStatistics
 
 
     def writeToFile(self, version, startingTime, size, logMessage):        
         valid_steps_rate = "__" + "{0:.2f}".format(self.success_rate_overall_valid_steps * 100)#.replace('.' , '-')
-        win_rate = "__" + "{0:.3f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
+        win_rate = "__" + "{0:.2f}".format(self.overall_win_rate * 100)#.replace('.' , '-')
         file_format = ".txt"
-        FILE = "Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
+        FILE = "Checkers\\Logs\\Version_" + str(version) + "\\" + str(size) + "\\" + startingTime + valid_steps_rate + win_rate + file_format
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
+        self.FILE = FILE
         print("\nFile can be found at: " + FILE + "\n\n")
 
 
@@ -76,34 +88,35 @@ class Logger:
         rewardWon = self.gameInformation[5]
         rewardLost = self.gameInformation[6]
 
-        startingTime = self.simulationInformation[0]
-        action_space_size = self.simulationInformation[1]
-        state_space_size = self.simulationInformation[2]
-        # q_table = self.simulationInformation[3]
-        num_episodes = self.simulationInformation[4]
-        # max_steps_per_episode = self.simulationInformation[5]
-        learning_rate = self.simulationInformation[6]
-        discount_rate = self.simulationInformation[7]
-        # exploration_rate = self.simulationInformation[8]
-        exploration_decay_rate = self.simulationInformation[9]
-        max_exploration_rate = self.simulationInformation[10]
-        min_exploration_rate = self.simulationInformation[11]
-        start_exploration_rate = self.simulationInformation[12]
-        notes = self.simulationInformation[13]
-        statistics = self.simulationInformation[14]
-        statistics_separation_counter = self.simulationInformation[15]
-        total_steps = self.simulationInformation[16]
-        total_valid_steps = self.simulationInformation[17]
-        timeMeasurement = self.simulationInformation[18]
-        size = self.simulationInformation[19]
-        simulation_episode = self.simulationInformation[20]
-        endingTime = self.simulationInformation[21]
+        startingTime = self.trainingInformation[0]
+        action_space_size = self.trainingInformation[1]
+        state_space_size = self.trainingInformation[2]
+        # q_table = self.trainingInformation[3]
+        num_episodes = self.trainingInformation[4]
+        # max_steps_per_episode = self.trainingInformation[5]
+        learning_rate = self.trainingInformation[6]
+        discount_rate = self.trainingInformation[7]
+        # exploration_rate = self.trainingInformation[8]
+        exploration_decay_rate = self.trainingInformation[9]
+        max_exploration_rate = self.trainingInformation[10]
+        min_exploration_rate = self.trainingInformation[11]
+        start_exploration_rate = self.trainingInformation[12]
+        notes = self.trainingInformation[13]
+        statistics = self.trainingInformation[14]
+        statistics_separation_counter = self.trainingInformation[15]
+        total_steps = self.trainingInformation[16]
+        total_valid_steps = self.trainingInformation[17]
+        timeMeasurement = self.trainingInformation[18]
+        size = self.trainingInformation[19]
+        current_training_episode = self.trainingInformation[20]
+        num_trainings = self.trainingInformation[21]
+        endingTime = self.trainingInformation[22]
 
         newLine = "\n"
         infoSeparator = " || "
 
         logMessage = "******************************************** " + "REINFORCEMENT LEARNING AI LOGBOOK" + " ********************************************" + newLine
-        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Simulation Episode: " + str(simulation_episode) + newLine
+        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Training Episode: " + current_training_episode + "/" + num_trainings + newLine
 
 
         if notes:
@@ -118,7 +131,7 @@ class Logger:
         logMessage += infoSeparator + "...Winning: " + str(rewardWon) + infoSeparator + "...Loosing: " + str(rewardLost) + newLine
 
 
-        logMessage += self.getHeadline("SIMULATION INFORMATION")
+        logMessage += self.getHeadline("TRAINING INFORMATION")
         logMessage += "Action Space Size: " + str(action_space_size) + infoSeparator + "State Space Size: " + str(state_space_size) + infoSeparator + "Q-Table Size: " + str(action_space_size * state_space_size) + newLine        
         logMessage += "Learning Rate: " + str(learning_rate) + infoSeparator + "Discount Rate: " + str(discount_rate) + newLine
         logMessage += "Number of Episodes: " + str(num_episodes) + newLine
@@ -136,5 +149,5 @@ class Logger:
         logMessage += self.getHeadline("LOG END")
     
         print(logMessage)
-        print("Simulation ended at: " + endingTime)
+        print("Training ended at: " + endingTime)
         self.writeToFile(version, startingTime, size, logMessage)
