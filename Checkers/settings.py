@@ -3,8 +3,8 @@ from commander import *
 
 # Training Settings
 board_size = 6
-num_trainings = 1
-num_episodes_per_training = 30000
+num_trainings = 2
+num_episodes_per_training = 3000000
 max_steps_per_episode = 1000
 
 learning_rate = 0.1
@@ -22,8 +22,8 @@ reward_won = 0
 reward_lost = -1
 
 # Logging Settings
-log_notes = "No more min_exploration_rate and Negative Rewards (for losing), only"
-statistics_separation_counter = 2500
+log_notes = "Higher exploration decay rate"
+statistics_separation_counter = 25000
 
 # Saving Settings
 log_save_path = "Checkers\\Logs\\Version_"

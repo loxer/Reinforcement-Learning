@@ -15,8 +15,6 @@ class Commander:
 
 
     def start(self, board, training_settings, logging_settings, agent_save_path):
-        with h5py.File(agent_save_path, "w"):    
-            pass    # just create a file for saving agents, if it doesn't exist already
         game = board
         self.q_table = np.zeros((game.state_space(), game.action_space()))
         
@@ -261,7 +259,7 @@ class Commander:
 
 
     def view_agents(self, agent_save_path, answer, new_line):
-        with h5py.File(agent_save_path, "r") as hdf:
+        with h5py.File(agent_save_path, "a") as hdf:
             agent_count = len(list(hdf.keys()))
             if agent_count == 0:
                 print(answer + "No agents have been saved, yet." + new_line)
@@ -273,7 +271,7 @@ class Commander:
 
 
     def load_agent(self, agent_save_path, digit, answer, new_line, print_message = False):
-        with h5py.File(agent_save_path, "r") as hdf:
+        with h5py.File(agent_save_path, "a") as hdf:
             agent_count = len(list(hdf.keys()))
             if digit >= 0 and digit < agent_count:
                 loaded_agent = hdf.get(str(digit))
@@ -289,7 +287,7 @@ class Commander:
         temp_agents = []
         message = answer
 
-        with h5py.File(agent_save_path, "r") as hdf:        
+        with h5py.File(agent_save_path, "a") as hdf:        
             agent_count = len(list(hdf.keys()))
             for i in range(agent_count):
                 temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
@@ -313,7 +311,7 @@ class Commander:
         temp_agents = []
         message = answer
 
-        with h5py.File(agent_save_path, "r") as hdf:        
+        with h5py.File(agent_save_path, "a") as hdf:        
             agent_count = len(list(hdf.keys()))
             for i in range(agent_count):
                 temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
