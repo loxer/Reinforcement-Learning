@@ -348,7 +348,9 @@ class Commander:
 
 
     def close_programm(self, indent, new_line):
-        self.programming_running = self.user_keeps_playing = self.game_over = False
+        self.programming_running = False
+        self.user_keeps_playing = False
+        self.game_over = True
         print(new_line + indent + "********************* SEE YOU *********************" + 3 * new_line)
 
 
