@@ -9,16 +9,15 @@ class Commander:
         self.agents = []
         self.agents_data = []
         self.q_table = 0
-        self.programming_running = True
+        self.program_running = True
         self.user_keeps_playing = False
         self.game_over = False
 
 
-    def start(self, board, training_settings, logging_settings, agent_save_path):
+    def start(self, board, training_settings, logging_settings, console_settings, agent_save_path):
         game = board
         self.q_table = np.zeros((game.state_space(), game.action_space()))
-        
-        board_size = training_settings[0]
+
         learning_rate = training_settings[4]
         discount_rate = training_settings[5]
 
@@ -30,16 +29,15 @@ class Commander:
         question = indent + "¿¿¿ "
         answer = indent + "=====>  "
         options = indent + "(options)" + 2 * new_line
-        game_started = 2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent)
 
-        self.print_programm_started(new_line)
+        self.print_program_started(new_line)
 
-        while self.programming_running:
+        while self.program_running:
             action = input(question + "What do you want to do?" + options)
             print(new_line)
 
             if action == "options":
-                self.show_options(self.get_program_options(), indent, new_line)
+                self.show_options("program", self.get_program_options(), console_settings, indent, new_line)
 
             elif action == "new":
                 self.q_table = np.zeros((game.state_space(), game.action_space()))
@@ -85,34 +83,33 @@ class Commander:
                 self.game_over = False
 
             elif action == "close":
-                self.close_programm(indent, new_line)
+                self.close_program(indent, new_line)
 
 
             while self.user_keeps_playing:
-                print(game_started)
-                state = game.reset()
-
                 if self.game_over:
                     action = input(new_line + question + "Another round?" + indent + "(yes/no/close)" + new_line)
 
                     if action == "yes":
                         self.game_over = False
-                        print(game_started)
 
                     elif action == "no":
                         self.user_keeps_playing = False
                         print(new_line)
 
                     elif action == "close":
-                        self.close_programm(indent, new_line)
+                        self.close_program(indent, new_line)
 
+                if not(self.game_over):
+                    state = game.reset()
+                    print(2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent))
 
                 while not(self.game_over):
                     action = input(question + "How do you want to play this?" + options)
                     print("")                
 
                     if action == "options":
-                        self.show_options(self.get_game_options(), indent, new_line)
+                        self.show_options("game", self.get_game_options(), console_settings, indent, new_line)
 
                     elif action == "learn on":
                             advised_learning_enabled = True
@@ -142,38 +139,19 @@ class Commander:
                         print(answer + "Reward and state will NOT be printed." + 2 * new_line)
 
                     elif "check" in action:
-                        action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
-                        if len(action) == 0:
-                            action = self.no_digits_found(answer, new_line)
-                        else:
-                            action = action[0]
-                            if action <= game.action_space():
-                                _, _, _, info = game.step(action, False)
-                                if info[0] == False:
-                                    action = indent + "--- This move would be INVALED ---" + 2 * new_line
-                                else:
-                                    action = indent + "+++ This move will be FINE +++" + 2 * new_line
-                            else:
-                                action = indent + "--- This move would be OUT OF RANGE ---" + 2 * new_line
-                        print(action)
+                        print(self.check_move(game, action, answer, indent, new_line))
 
                     elif action == "cheat":
-                        for i in range(board_size + 1, game.action_space()):                        
-                            _, _, _, info = game.step(i, False)
-                            if info[0] == True:
-                                print(answer + "A valid move will be: " + str(i) + 2 * new_line)
-                                break
+                        print(answer + "The valid moves are: " + self.get_valid_moves(game) + 2 * new_line)
 
                     elif action == "board":
                         print(self.print_board(game.getBoard(), indent))
 
                     elif action == "stop":
-                        self.game_over = True
-                        self.user_keeps_playing = False
-                        print(indent + "------ Match aborted ------" + 2 * new_line)
+                        print(indent + self.stop_playing() + 2 * new_line)
 
                     elif action == "close":
-                        self.close_programm(indent, new_line)
+                        self.close_program(indent, new_line)
 
                     elif action == "pass":
                             action = str(np.argmax(self.q_table[state,:]))
@@ -198,13 +176,12 @@ class Commander:
                             print(indent + self.move_message(info))
 
 
-    def show_options(self, options, answer, new_line):        
-        
+    def show_options(self, category, options, console_settings, answer, new_line):
+        max_chars_of_explanations_per_line = console_settings[0]
+        max_chars_to_explanations = console_settings[1]
         blank = " "
-        max_chars_of_explanations_per_line = 71
-        max_chars_to_explanations = 20
 
-        print(answer + "Here are all your options:" + new_line)
+        print(answer + "Here are all your " + category + " options:" + new_line)
         for i in range(len(options)):
             number_of_blanks = max_chars_to_explanations - len(options[i][0])
             message = options[i][0] + blank * number_of_blanks
@@ -347,8 +324,47 @@ class Commander:
         return pos_values, highest_value
 
 
-    def close_programm(self, indent, new_line):
-        self.programming_running = False
+    def get_valid_moves(self, game):
+        valid_moves = []
+        for i in range(self.size + 1, game.action_space()):                        
+            _, _, _, info = game.step(i, False)
+            if info[0] == True:
+                valid_moves.append(i)
+        
+        moves_as_string = ""
+        for k in range(len(valid_moves)):
+            moves_as_string += str(valid_moves[k])
+            if k < len(valid_moves)-1:
+                moves_as_string += ", "
+        return moves_as_string
+
+
+    def check_move(self, game, action, answer, indent, new_line):
+        action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
+        if len(action) == 0:
+            action = self.no_digits_found(answer, new_line)
+        else:
+            action = action[0]
+            if action <= game.action_space():
+                _, _, _, info = game.step(action, False)
+                if info[0] == False:
+                    action = "--- This move would be INVALED ---"
+                else:
+                    action = "+++ This move will be FINE +++"
+            else:
+                action = "--- This move would be OUT OF RANGE ---"
+            action = indent + action + 2 * new_line
+        return action
+
+
+    def stop_playing(self):
+        self.game_over = True
+        self.user_keeps_playing = False
+        return "------ Match aborted ------"
+
+
+    def close_program(self, indent, new_line):
+        self.program_running = False
         self.user_keeps_playing = False
         self.game_over = True
         print(new_line + indent + "********************* SEE YOU *********************" + 3 * new_line)
@@ -368,7 +384,6 @@ class Commander:
         
         pos_values, highest_value = self.get_highest_values(q_table, state)
         q_table_print += new_line + answer + "Highest value is " + str(highest_value) + " and can be found at position(s): " + pos_values + 2*new_line
-
         return q_table_print
 
 
@@ -391,8 +406,8 @@ class Commander:
         return answer + "No digits found." + 2 * new_line
 
     
-    def print_programm_started(self, new_line):
-        print(new_line)
+    def print_program_started(self, new_line):
+        print(2*new_line)
         print("                  *************************************************" + new_line)
         print("                  ****** WELCOME TO MY REINFORCEMENT PROJECT ******" + new_line)
         print("                  *************************************************" + 2*new_line)
@@ -421,7 +436,7 @@ class Commander:
         game_options = [
             ["#","Enter a digit to make a step on the board."],
             ["board","Shows you the current state of the board."],
-            ["cheat","Gives you a valid step."],
+            ["cheat","Gives you the valid steps."],
             ["check #","Enter 'check' + a digit to check, if that step would be valid or not."],
             ["close","Ends the current session and closes the program."],
             ["learn off","Currently in charge agent does NOT learn from any steps made from now on. This is the default option, when the program has started."],

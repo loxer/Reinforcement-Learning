@@ -1,0 +1,153 @@
+******************************************** REINFORCEMENT LEARNING AI LOGBOOK ********************************************
+2021-03-04_16-41-32 || Version: 2 || Training Episode: 1/1
+
+
+------------------------------------------- NOTES -------------------------------------------
+Higher exploration decay rate
+
+------------------------------------------- GAME INFORMATION -------------------------------------------
+Number of Fields: 36 || Number of Pieces Per Player: 6
+
+        REWARDS for...
+...Valid Steps: 0 || ...Milestones: 100 || ...Winning: 0 || ...Loosing: -1
+
+
+------------------------------------------- TRAINING INFORMATION -------------------------------------------
+Action Space Size: 216 || State Space Size: 258048 || Q-Table Size: 55738368
+Learning Rate: 0.1 || Discount Rate: 0.99
+Number of Episodes: 3000000
+
+        EXPLORATION...
+...Starting Rate: 1 || ...Maximum Rate: 1 || ...Minimum Rate: 0.0000000 || ...Decay Rate: 0.0000065
+
+
+------------------------------------------- STATISTICS PER 25000 EPISODES -------------------------------------------
+Rewards: -0.90 || Valid Steps: 10.31 % || Milestones: 0.02 % || Wins: 0.00 % / 0 || Episodes: 0 to 25000
+Rewards: 0.11 || Valid Steps: 23.53 % || Milestones: 0.19 % || Wins: 0.00 % / 0 || Episodes: 25000 to 50000
+Rewards: 2.98 || Valid Steps: 34.79 % || Milestones: 0.66 % || Wins: 0.00 % / 0 || Episodes: 50000 to 75000
+Rewards: 7.55 || Valid Steps: 44.87 % || Milestones: 1.43 % || Wins: 0.00 % / 0 || Episodes: 75000 to 100000
+Rewards: 13.34 || Valid Steps: 53.07 % || Milestones: 2.39 % || Wins: 0.00 % / 0 || Episodes: 100000 to 125000
+Rewards: 20.47 || Valid Steps: 60.21 % || Milestones: 3.58 % || Wins: 0.00 % / 0 || Episodes: 125000 to 150000
+Rewards: 28.29 || Valid Steps: 66.07 % || Milestones: 4.88 % || Wins: 0.00 % / 0 || Episodes: 150000 to 175000
+Rewards: 37.63 || Valid Steps: 71.24 % || Milestones: 6.44 % || Wins: 0.02 % / 5 || Episodes: 175000 to 200000
+Rewards: 47.58 || Valid Steps: 75.74 % || Milestones: 8.12 % || Wins: 0.12 % / 29 || Episodes: 200000 to 225000
+Rewards: 59.19 || Valid Steps: 79.23 % || Milestones: 10.09 % || Wins: 0.34 % / 85 || Episodes: 225000 to 250000
+Rewards: 72.10 || Valid Steps: 82.16 % || Milestones: 12.32 % || Wins: 0.85 % / 213 || Episodes: 250000 to 275000
+Rewards: 89.15 || Valid Steps: 84.95 % || Milestones: 15.33 % || Wins: 1.84 % / 461 || Episodes: 275000 to 300000
+Rewards: 108.02 || Valid Steps: 87.21 % || Milestones: 18.77 % || Wins: 3.60 % / 901 || Episodes: 300000 to 325000
+Rewards: 130.13 || Valid Steps: 89.16 % || Milestones: 22.89 % || Wins: 6.29 % / 1573 || Episodes: 325000 to 350000
+Rewards: 151.83 || Valid Steps: 90.68 % || Milestones: 27.06 % || Wins: 9.60 % / 2399 || Episodes: 350000 to 375000
+Rewards: 178.01 || Valid Steps: 92.11 % || Milestones: 32.08 % || Wins: 13.58 % / 3396 || Episodes: 375000 to 400000
+Rewards: 204.44 || Valid Steps: 93.32 % || Milestones: 37.40 % || Wins: 19.18 % / 4795 || Episodes: 400000 to 425000
+Rewards: 230.09 || Valid Steps: 94.27 % || Milestones: 42.49 % || Wins: 24.08 % / 6020 || Episodes: 425000 to 450000
+Rewards: 258.10 || Valid Steps: 95.16 % || Milestones: 48.17 % || Wins: 30.20 % / 7550 || Episodes: 450000 to 475000
+Rewards: 283.40 || Valid Steps: 95.90 % || Milestones: 53.42 % || Wins: 36.47 % / 9117 || Episodes: 475000 to 500000
+Rewards: 305.32 || Valid Steps: 96.47 % || Milestones: 58.00 % || Wins: 42.13 % / 10532 || Episodes: 500000 to 525000
+Rewards: 329.10 || Valid Steps: 97.03 % || Milestones: 63.01 % || Wins: 48.44 % / 12111 || Episodes: 525000 to 550000
+Rewards: 349.42 || Valid Steps: 97.46 % || Milestones: 67.29 % || Wins: 53.86 % / 13465 || Episodes: 550000 to 575000
+Rewards: 368.10 || Valid Steps: 97.84 % || Milestones: 71.26 % || Wins: 59.07 % / 14768 || Episodes: 575000 to 600000
+Rewards: 383.95 || Valid Steps: 98.16 % || Milestones: 74.72 % || Wins: 63.99 % / 15997 || Episodes: 600000 to 625000
+Rewards: 399.58 || Valid Steps: 98.45 % || Milestones: 78.09 % || Wins: 68.66 % / 17166 || Episodes: 625000 to 650000
+Rewards: 411.60 || Valid Steps: 98.65 % || Milestones: 80.67 % || Wins: 72.17 % / 18042 || Episodes: 650000 to 675000
+Rewards: 425.68 || Valid Steps: 98.88 % || Milestones: 83.71 % || Wins: 76.32 % / 19081 || Episodes: 675000 to 700000
+Rewards: 436.83 || Valid Steps: 99.05 % || Milestones: 86.09 % || Wins: 79.49 % / 19872 || Episodes: 700000 to 725000
+Rewards: 446.42 || Valid Steps: 99.21 % || Milestones: 88.21 % || Wins: 82.69 % / 20673 || Episodes: 725000 to 750000
+Rewards: 451.28 || Valid Steps: 99.30 % || Milestones: 89.32 % || Wins: 84.48 % / 21119 || Episodes: 750000 to 775000
+Rewards: 459.46 || Valid Steps: 99.41 % || Milestones: 91.06 % || Wins: 86.77 % / 21692 || Episodes: 775000 to 800000
+Rewards: 465.80 || Valid Steps: 99.51 % || Milestones: 92.45 % || Wins: 88.78 % / 22196 || Episodes: 800000 to 825000
+Rewards: 468.87 || Valid Steps: 99.56 % || Milestones: 93.16 % || Wins: 89.96 % / 22491 || Episodes: 825000 to 850000
+Rewards: 474.47 || Valid Steps: 99.64 % || Milestones: 94.37 % || Wins: 91.64 % / 22910 || Episodes: 850000 to 875000
+Rewards: 478.84 || Valid Steps: 99.70 % || Milestones: 95.32 % || Wins: 92.99 % / 23248 || Episodes: 875000 to 900000
+Rewards: 480.90 || Valid Steps: 99.72 % || Milestones: 95.76 % || Wins: 93.58 % / 23395 || Episodes: 900000 to 925000
+Rewards: 484.33 || Valid Steps: 99.78 % || Milestones: 96.54 % || Wins: 94.84 % / 23710 || Episodes: 925000 to 950000
+Rewards: 486.73 || Valid Steps: 99.81 % || Milestones: 97.06 % || Wins: 95.60 % / 23901 || Episodes: 950000 to 975000
+Rewards: 489.02 || Valid Steps: 99.84 % || Milestones: 97.55 % || Wins: 96.26 % / 24066 || Episodes: 975000 to 1000000
+Rewards: 491.01 || Valid Steps: 99.87 % || Milestones: 98.00 % || Wins: 96.96 % / 24239 || Episodes: 1000000 to 1025000
+Rewards: 491.78 || Valid Steps: 99.88 % || Milestones: 98.18 % || Wins: 97.27 % / 24318 || Episodes: 1025000 to 1050000
+Rewards: 493.42 || Valid Steps: 99.91 % || Milestones: 98.53 % || Wins: 97.76 % / 24440 || Episodes: 1050000 to 1075000
+Rewards: 494.23 || Valid Steps: 99.92 % || Milestones: 98.72 % || Wins: 98.10 % / 24524 || Episodes: 1075000 to 1100000
+Rewards: 495.15 || Valid Steps: 99.93 % || Milestones: 98.93 % || Wins: 98.40 % / 24601 || Episodes: 1100000 to 1125000
+Rewards: 495.71 || Valid Steps: 99.94 % || Milestones: 99.05 % || Wins: 98.57 % / 24643 || Episodes: 1125000 to 1150000
+Rewards: 496.40 || Valid Steps: 99.95 % || Milestones: 99.20 % || Wins: 98.80 % / 24700 || Episodes: 1150000 to 1175000
+Rewards: 496.71 || Valid Steps: 99.95 % || Milestones: 99.27 % || Wins: 98.91 % / 24727 || Episodes: 1175000 to 1200000
+Rewards: 497.22 || Valid Steps: 99.96 % || Milestones: 99.38 % || Wins: 99.06 % / 24765 || Episodes: 1200000 to 1225000
+Rewards: 497.82 || Valid Steps: 99.97 % || Milestones: 99.52 % || Wins: 99.28 % / 24821 || Episodes: 1225000 to 1250000
+Rewards: 497.80 || Valid Steps: 99.97 % || Milestones: 99.52 % || Wins: 99.33 % / 24832 || Episodes: 1250000 to 1275000
+Rewards: 498.11 || Valid Steps: 99.97 % || Milestones: 99.58 % || Wins: 99.38 % / 24845 || Episodes: 1275000 to 1300000
+Rewards: 498.45 || Valid Steps: 99.98 % || Milestones: 99.66 % || Wins: 99.49 % / 24873 || Episodes: 1300000 to 1325000
+Rewards: 498.83 || Valid Steps: 99.98 % || Milestones: 99.74 % || Wins: 99.59 % / 24898 || Episodes: 1325000 to 1350000
+Rewards: 499.03 || Valid Steps: 99.99 % || Milestones: 99.79 % || Wins: 99.69 % / 24922 || Episodes: 1350000 to 1375000
+Rewards: 499.26 || Valid Steps: 99.99 % || Milestones: 99.84 % || Wins: 99.75 % / 24938 || Episodes: 1375000 to 1400000
+Rewards: 499.45 || Valid Steps: 99.99 % || Milestones: 99.87 % || Wins: 99.80 % / 24949 || Episodes: 1400000 to 1425000
+Rewards: 499.49 || Valid Steps: 99.99 % || Milestones: 99.89 % || Wins: 99.83 % / 24957 || Episodes: 1425000 to 1450000
+Rewards: 499.27 || Valid Steps: 99.99 % || Milestones: 99.84 % || Wins: 99.77 % / 24942 || Episodes: 1450000 to 1475000
+Rewards: 499.57 || Valid Steps: 99.99 % || Milestones: 99.90 % || Wins: 99.84 % / 24961 || Episodes: 1475000 to 1500000
+Rewards: 499.60 || Valid Steps: 99.99 % || Milestones: 99.91 % || Wins: 99.87 % / 24968 || Episodes: 1500000 to 1525000
+Rewards: 499.49 || Valid Steps: 99.99 % || Milestones: 99.89 % || Wins: 99.84 % / 24960 || Episodes: 1525000 to 1550000
+Rewards: 499.73 || Valid Steps: 100.00 % || Milestones: 99.94 % || Wins: 99.92 % / 24981 || Episodes: 1550000 to 1575000
+Rewards: 499.89 || Valid Steps: 100.00 % || Milestones: 99.98 % || Wins: 99.96 % / 24991 || Episodes: 1575000 to 1600000
+Rewards: 499.87 || Valid Steps: 100.00 % || Milestones: 99.97 % || Wins: 99.95 % / 24988 || Episodes: 1600000 to 1625000
+Rewards: 499.87 || Valid Steps: 100.00 % || Milestones: 99.97 % || Wins: 99.95 % / 24988 || Episodes: 1625000 to 1650000
+Rewards: 499.92 || Valid Steps: 100.00 % || Milestones: 99.98 % || Wins: 99.97 % / 24992 || Episodes: 1650000 to 1675000
+Rewards: 499.85 || Valid Steps: 100.00 % || Milestones: 99.97 % || Wins: 99.95 % / 24988 || Episodes: 1675000 to 1700000
+Rewards: 499.94 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.98 % / 24995 || Episodes: 1700000 to 1725000
+Rewards: 499.96 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24997 || Episodes: 1725000 to 1750000
+Rewards: 499.92 || Valid Steps: 100.00 % || Milestones: 99.98 % || Wins: 99.97 % / 24993 || Episodes: 1750000 to 1775000
+Rewards: 499.96 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24997 || Episodes: 1775000 to 1800000
+Rewards: 499.97 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24998 || Episodes: 1800000 to 1825000
+Rewards: 499.97 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.98 % / 24996 || Episodes: 1825000 to 1850000
+Rewards: 499.98 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 99.99 % / 24998 || Episodes: 1850000 to 1875000
+Rewards: 499.96 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24997 || Episodes: 1875000 to 1900000
+Rewards: 499.96 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24997 || Episodes: 1900000 to 1925000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 1925000 to 1950000
+Rewards: 499.99 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 99.99 % / 24998 || Episodes: 1950000 to 1975000
+Rewards: 499.97 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24998 || Episodes: 1975000 to 2000000
+Rewards: 499.97 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24998 || Episodes: 2000000 to 2025000
+Rewards: 499.99 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 24999 || Episodes: 2025000 to 2050000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2050000 to 2075000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2075000 to 2100000
+Rewards: 499.97 || Valid Steps: 100.00 % || Milestones: 99.99 % || Wins: 99.99 % / 24998 || Episodes: 2100000 to 2125000
+Rewards: 499.99 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 24999 || Episodes: 2125000 to 2150000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2150000 to 2175000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2175000 to 2200000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2200000 to 2225000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2225000 to 2250000
+Rewards: 499.98 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 24999 || Episodes: 2250000 to 2275000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2275000 to 2300000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2300000 to 2325000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2325000 to 2350000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2350000 to 2375000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2375000 to 2400000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2400000 to 2425000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2425000 to 2450000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2450000 to 2475000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2475000 to 2500000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2500000 to 2525000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2525000 to 2550000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2550000 to 2575000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2575000 to 2600000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2600000 to 2625000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2625000 to 2650000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2650000 to 2675000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2675000 to 2700000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2700000 to 2725000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2725000 to 2750000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2750000 to 2775000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2775000 to 2800000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2800000 to 2825000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2825000 to 2850000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2850000 to 2875000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2875000 to 2900000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2900000 to 2925000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2925000 to 2950000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2950000 to 2975000
+Rewards: 500.00 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 25000 || Episodes: 2975000 to 3000000
+
+Total Valid Steps Rate: 99.06 %
+Total Milestone Rate: 83.56 %
+Total Winning Rate: 80.72 %
+
+Time for Processing 3000000 Episodes: 3234.2413001000004 seconds
+Average Time for 1000 Episodes: 1.078080433366667 seconds
+
+------------------------------------------- LOG END -------------------------------------------
