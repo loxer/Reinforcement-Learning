@@ -2,7 +2,7 @@ from game import *
 from commander import *
 
 # Training Settings
-board_size = 5
+board_size = 6
 num_trainings = 1
 num_episodes_per_training = 25000
 max_steps_per_episode = 1000

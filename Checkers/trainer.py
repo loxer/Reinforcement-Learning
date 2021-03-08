@@ -17,7 +17,7 @@ class Trainer:
         state_space_size = board.state_space()
 
         if isinstance(q_table, bool):
-            q_table = np.zeros((state_space_size, action_space_size))
+            q_table = np.zeros((state_space_size, action_space_size), dtype=np.float32)
 
         num_episodes = training_settings[2]
         max_steps_per_episode = training_settings[3]

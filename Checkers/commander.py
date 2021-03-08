@@ -16,7 +16,7 @@ class Commander:
 
     def start(self, board, training_settings, logging_settings, console_settings, agent_save_path):
         game = board
-        self.q_table = np.zeros((game.state_space(), game.action_space()))
+        self.set_new_agent(game)
 
         learning_rate = training_settings[4]
         discount_rate = training_settings[5]
@@ -40,7 +40,7 @@ class Commander:
                 self.show_options("program", self.get_program_options(), console_settings, indent, new_line)
 
             elif action == "new":
-                self.q_table = np.zeros((game.state_space(), game.action_space()))
+                self.set_new_agent(game)
                 print(answer + "New agent has been recruited!" + 2 * new_line)
 
             elif action == "agents":
@@ -201,6 +201,9 @@ class Commander:
             print(message + new_line)
         print(new_line)
 
+
+    def set_new_agent(self, game):
+        self.q_table = np.zeros((game.state_space(), game.action_space()), dtype=np.float32)
 
     def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
         num_episodes = training_settings[1]

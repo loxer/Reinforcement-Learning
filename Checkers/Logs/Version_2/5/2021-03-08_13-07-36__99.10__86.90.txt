@@ -1,0 +1,38 @@
+******************************************** REINFORCEMENT LEARNING AI LOGBOOK ********************************************
+2021-03-08_13-07-36 || Version: 2 || Training Episode: 1/1
+
+
+------------------------------------------- NOTES -------------------------------------------
+Test specific agent
+
+------------------------------------------- GAME INFORMATION -------------------------------------------
+Number of Fields: 25 || Number of Pieces Per Player: 5
+
+        REWARDS for...
+...Valid Steps: 0.5 || ...Milestones: 1 || ...Winning: 0 || ...Loosing: -1
+
+
+------------------------------------------- TRAINING INFORMATION -------------------------------------------
+Action Space Size: 125 || State Space Size: 7936 || Q-Table Size: 992000
+Learning Rate: 0.1 || Discount Rate: 0.99
+Number of Episodes: 25000
+
+        EXPLORATION...
+...Starting Rate: 0 || ...Maximum Rate: 1 || ...Minimum Rate: 0.0000000 || ...Decay Rate: 0.0011165
+
+
+------------------------------------------- STATISTICS PER 5000 EPISODES -------------------------------------------
+Rewards: 4.33 || Valid Steps: 92.83 % || Milestones: 46.29 % || Wins: 35.54 % / 1777 || Episodes: 0 to 5000
+Rewards: 9.44 || Valid Steps: 99.93 % || Milestones: 99.34 % || Wins: 98.96 % / 4948 || Episodes: 5000 to 10000
+Rewards: 9.50 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 5000 || Episodes: 10000 to 15000
+Rewards: 9.50 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 5000 || Episodes: 15000 to 20000
+Rewards: 9.50 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 5000 || Episodes: 20000 to 25000
+
+Total Valid Steps Rate: 99.10 %
+Total Milestone Rate: 89.13 %
+Total Winning Rate: 86.90 %
+
+Time for Processing 25000 Episodes: 14.071290500000003 seconds
+Average Time for 1000 Episodes: 0.5628516200000002 seconds
+
+------------------------------------------- LOG END -------------------------------------------
