@@ -3,7 +3,7 @@
 
 
 ------------------------------------------- NOTES -------------------------------------------
-Test specific agent
+Increased decay rate for higher winning rate
 
 ------------------------------------------- GAME INFORMATION -------------------------------------------
 Number of Fields: 25 || Number of Pieces Per Player: 5

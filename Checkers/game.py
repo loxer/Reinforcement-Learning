@@ -4,6 +4,8 @@ import random
 
 class Game:
     def __init__(self, size, reward_settings):
+        if not(isinstance(size, int)) or size < 4:
+            size = 4
         self.size = size
         self.board = np.zeros([size, size], dtype=int)
         self.numberOfFields = size * size
@@ -22,7 +24,7 @@ class Game:
     def reset(self):
         self.clearBoard()
         self.prepareBoard()
-        return self.getState()
+        return self.get_state()
 
 
     def prepareBoard(self):
@@ -51,7 +53,7 @@ class Game:
         return (x + y) % 2 == 0         # every black field (defined as an even number here) is a valid field
 
 
-    def getState(self):
+    def get_state(self):
         new_state = 0
         for x in range(self.size):
             for y in range(self.size):
@@ -59,7 +61,7 @@ class Game:
                         y_calc = y // 2                                   
                         new_state += pow(2, x * self.size // 2 + y_calc)  # new state is calculated from binary-to-decimal (board array is in binary, states are in decimal)
                         y += 1      # skip the white fields
-        return new_state - 1
+        return new_state - 1        # because array starts with 0
 
 
     def arrayPosition(self, x, y):
@@ -132,7 +134,7 @@ class Game:
                             self.board[destinationX,destinationY] = 1
 
                             if moveIsValid:
-                                new_state = self.getState()
+                                new_state = self.get_state()
                                 reward = self.reward_valid_step
                                 info[0] = True                            
 

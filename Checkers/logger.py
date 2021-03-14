@@ -76,7 +76,7 @@ class Logger:
         logFile = open(FILE,"w+")
         logFile.write(logMessage)
         self.FILE = FILE
-        print("\nFile can be found at: " + FILE + "\n\n")
+        print("\nFile can be found at: " + FILE)
 
 
     def createLog(self):        
@@ -111,6 +111,7 @@ class Logger:
         current_training_episode = self.trainingInformation[20]
         num_trainings = self.trainingInformation[21]
         endingTime = self.trainingInformation[22]
+        create_log_file = self.trainingInformation[23]
 
         newLine = "\n"
         infoSeparator = " || "
@@ -150,4 +151,8 @@ class Logger:
     
         print(logMessage)
         print("Training ended at: " + endingTime)
-        self.writeToFile(version, startingTime, size, logMessage)
+
+        if create_log_file:
+            self.writeToFile(version, startingTime, size, logMessage)
+        
+        print(2*newLine)

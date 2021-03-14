@@ -2,35 +2,36 @@ from game import *
 from commander import *
 
 # Training Settings
-board_size = 6
+board_size = 4
 num_trainings = 1
-num_episodes_per_training = 25000
-max_steps_per_episode = 1000
+num_episodes_per_training = 30000
+max_steps_per_episode = 1000                # not used in this game, since every step is either an advancement towards the goal or invalid and gaming ending
 
-learning_rate = 0.1
+learning_rate = 1
 discount_rate = 0.99
 
-start_exploration_rate = 0
+start_exploration_rate = 1
 max_exploration_rate = 1
 min_exploration_rate = "0.0000000"          # as string for logs, will be casted to float at the training
-exploration_decay_rate = "0.0011165"        # same
+exploration_decay_rate = "0.0001165"        # same
 
 # Reward Settings
-reward_valid_step = 0.5
+reward_valid_step = 1
 reward_milestone = 1
-reward_won = 0
+reward_won = 1
 reward_lost = -1
 
 # Logging Settings
 log_notes = "Test specific agent"
 statistics_separation_counter = 5000
+create_log_file = False
 
 # Saving Settings
 log_save_path = "Checkers\\Logs\\Version_"
 agent_save_path = "Checkers\\agents.hdf5"
 
 # Console Settings
-max_chars_of_explanations_per_line = 71
+max_chars_of_explanations_per_line = 91
 max_chars_to_explanations = 20
 
 # Storing Settings in Lists
@@ -39,7 +40,7 @@ training_settings = [board_size, num_trainings, num_episodes_per_training, max_s
 
 reward_settings = [reward_valid_step, reward_milestone, reward_won, reward_lost]
 
-logging_settings = [log_notes, statistics_separation_counter, log_save_path]
+logging_settings = [log_notes, statistics_separation_counter, log_save_path, create_log_file]
 
 console_settings = [max_chars_of_explanations_per_line, max_chars_to_explanations]
 

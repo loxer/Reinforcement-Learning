@@ -66,10 +66,7 @@ class Trainer:
                 # Update Q-table
                 q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
                     learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
-                
-                # Set new state
-                state = new_state
-                
+                               
                 # Save data for statistics
                 rewards_current_episode += reward
                 
@@ -87,6 +84,9 @@ class Trainer:
                     else:
                         wins_of_all_episodes.append(1)
                     break
+                
+                # Set new state
+                state = new_state
 
             # Exploration rate decay
             exploration_rate = min_exploration_rate + \
@@ -119,7 +119,7 @@ class Trainer:
 
         trainingInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, learning_rate, discount_rate, 
                                 exploration_rate, training_settings[9], max_exploration_rate, training_settings[8], start_exploration_rate, logging_settings[0],
-                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_training_episode, num_trainings, endingTime]
+                                statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, current_training_episode, num_trainings, endingTime, logging_settings[3]]
         
         self.logger = Logger(gameInformation, trainingInformation)
         self.logger.createLog()

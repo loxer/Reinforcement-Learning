@@ -46,6 +46,9 @@ class Commander:
             elif action == "agents":
                 self.view_agents(agent_save_path, answer, new_line)
 
+            elif action == "knowledge":
+                self.check_qtable_cells(indent, new_line)
+
             elif action == "train new":
                 self.train_new_agents(board, training_settings, logging_settings)
                 self.show_results(indent, answer, new_line)
@@ -204,6 +207,7 @@ class Commander:
 
     def set_new_agent(self, game):
         self.q_table = np.zeros((game.state_space(), game.action_space()), dtype=np.float32)
+        
 
     def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
         num_episodes = training_settings[1]
@@ -219,8 +223,12 @@ class Commander:
             print(indent + "No agents were send to the trainings camp, yet." + new_line)
         else:
             print(indent + "Here are the newly trained agents: " + new_line)
-            for i in range(len(self.agents_data)):
-                print("=====>  " + str(i+1) + ": " + self.agents_data[i][0] + "File: " + self.agents_data[i][1])
+            for i in range(len(self.agents_data)):                
+                if self.agents_data[i][1]:
+                    log_file = "File: " + self.agents_data[i][1]
+                else:
+                    log_file = "No log file created"
+                print("=====>  " + str(i+1) + ": " + self.agents_data[i][0] + log_file)
         print(new_line)
 
 
@@ -236,6 +244,31 @@ class Commander:
             print(answer + "Agent " + str(digit + 1) + " is waiting for action!" + 2*new_line)
         else:
             print(answer + "This agent does NOT exist!" + 2*new_line)
+
+
+    def check_qtable_cells(self, indent, new_line):
+        q_table_size = 0
+        count_zeros = 0
+        for state in range(len(self.q_table)):
+            q_table_size += len(self.q_table[state,])
+            for action in range(len(self.q_table[state,])):
+                if self.q_table[state,action] == 0:
+                    count_zeros += 1
+        filled_cells = q_table_size - count_zeros
+
+        print_message = indent + "This represents the agent's knowledge:" + new_line
+        print_message += indent + "Size of Q-Table: " + str(count_zeros) + new_line
+        print_message += indent + "Empty cells: " + str(count_zeros) + " / "
+        print_message += str(count_zeros / q_table_size * 100) + " %" + new_line
+        print_message += indent + "Filled cells: " + str(filled_cells) + " / "
+        print_message += str(filled_cells / q_table_size * 100) + " %" + 2*new_line
+        print(print_message)
+        
+        # print_message += indent + "Empty cells: " + str(count_zeros) + new_line
+        # print("Empty cells: ", filled_cells)
+        # print("Filled cells: ", count_zeros)
+        # print("Size of Q-Table: ", q_table_size)
+        # print("Percentage filled: ", str(filled_cells / q_table_size * 100), " %")
 
 
     def view_agents(self, agent_save_path, answer, new_line):
@@ -423,6 +456,7 @@ class Commander:
             ["clear","Deleting all the newly trained agents and its results of this session. Logs will not be removed."],
             ["close","Ends the current session and closes the program."],
             ["delete #","Deletes the selected saved agent."],
+            ["knowledge", "Displays the number of free and set cells of the Q-Table."],
             ["load #","Loads the selected trained agent and puts that one in charge. Available agents can be seen in 'agents'. All further operations in 'play' will be done on this agent."],
             ["play","Go into play mode. You can use your currently in charge agent and experiement with it."],
             ["results","Shows the results of the trainings of this session."],            
