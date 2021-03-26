@@ -1,0 +1,43 @@
+******************************************** REINFORCEMENT LEARNING AI LOGBOOK ********************************************
+2021-03-18_20-25-32 || Version: 2 || Training Episode: 1/1
+
+
+------------------------------------------- NOTES -------------------------------------------
+Daten zur 3. Analyse der 5.5 Explorationsparameter - Reduzierung der max_exploration_rate - Tabelle12
+
+------------------------------------------- GAME INFORMATION -------------------------------------------
+Number of Fields: 16 || Number of Pieces Per Player: 2
+
+        REWARDS for...
+...Valid Steps: 0.2 || ...Milestones: 0 || ...Winning: 1 || ...Loosing: -1
+
+
+------------------------------------------- TRAINING INFORMATION -------------------------------------------
+Action Space Size: 32 || State Space Size: 192 || Q-Table Size: 6144
+Learning Rate: 0.1 || Discount Rate: 0.99
+Number of Episodes: 10000
+
+        EXPLORATION...
+...Starting Rate: 0.5 || ...Maximum Rate: 0.5 || ...Minimum Rate: 0 || ...Decay Rate: 0.001
+
+
+------------------------------------------- STATISTICS PER 1000 EPISODES -------------------------------------------
+Rewards: -0.29 || Valid Steps: 73.82 % || Milestones: 19.55 % || Wins: 15.80 % / 158 || Episodes: 0 to 1000
+Rewards: 0.63 || Valid Steps: 89.40 % || Milestones: 54.15 % || Wins: 50.80 % / 508 || Episodes: 1000 to 2000
+Rewards: 1.34 || Valid Steps: 96.49 % || Milestones: 82.45 % || Wins: 80.70 % / 807 || Episodes: 2000 to 3000
+Rewards: 1.60 || Valid Steps: 98.48 % || Milestones: 92.25 % || Wins: 91.20 % / 912 || Episodes: 3000 to 4000
+Rewards: 1.73 || Valid Steps: 99.51 % || Milestones: 97.35 % || Wins: 97.10 % / 971 || Episodes: 4000 to 5000
+Rewards: 1.78 || Valid Steps: 99.82 % || Milestones: 98.95 % || Wins: 98.90 % / 989 || Episodes: 5000 to 6000
+Rewards: 1.80 || Valid Steps: 99.97 % || Milestones: 99.80 % || Wins: 99.80 % / 998 || Episodes: 6000 to 7000
+Rewards: 1.80 || Valid Steps: 99.98 % || Milestones: 99.90 % || Wins: 99.90 % / 999 || Episodes: 7000 to 8000
+Rewards: 1.80 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 1000 || Episodes: 8000 to 9000
+Rewards: 1.80 || Valid Steps: 100.00 % || Milestones: 100.00 % || Wins: 100.00 % / 1000 || Episodes: 9000 to 10000
+
+Total Valid Steps Rate: 96.99 %
+Total Milestone Rate: 84.44 %
+Total Winning Rate: 83.42 %
+
+Time for Processing 10000 Episodes: 1.9421365999999978 seconds
+Average Time for 1000 Episodes: 0.19421365999999976 seconds
+
+------------------------------------------- LOG END -------------------------------------------

@@ -2,29 +2,29 @@ from game import *
 from commander import *
 
 # Training Settings
-board_size = 4
+board_size = 5
 num_trainings = 1
-num_episodes_per_training = 30000
-max_steps_per_episode = 1000                # not used in this game, since every step is either an advancement towards the goal or invalid and gaming ending
+num_episodes_per_training = 20000
+max_steps_per_episode = 100                # not used in this game, since every step is either an advancement towards the goal or invalid and gaming ending
 
-learning_rate = 1
+learning_rate = 0.1
 discount_rate = 0.99
 
 start_exploration_rate = 1
-max_exploration_rate = 1
-min_exploration_rate = "0.0000000"          # as string for logs, will be casted to float at the training
-exploration_decay_rate = "0.0001165"        # same
+max_exploration_rate = start_exploration_rate
+min_exploration_rate = "0"                  # as string for logs, will be casted to float at the training
+exploration_decay_rate = "0.001"           # same
 
 # Reward Settings
-reward_valid_step = 1
-reward_milestone = 1
+reward_valid_step = 0.2
+reward_milestone = 0
 reward_won = 1
 reward_lost = -1
 
 # Logging Settings
-log_notes = "Test specific agent"
-statistics_separation_counter = 5000
-create_log_file = False
+log_notes = "learning_rate / discount_rate"
+statistics_separation_counter = int(num_episodes_per_training / 10)
+create_log_file = True
 
 # Saving Settings
 log_save_path = "Checkers\\Logs\\Version_"

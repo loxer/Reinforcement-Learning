@@ -1,6 +1,7 @@
 from trainer import *
 import numpy as np
 import h5py
+import timeit
 
 
 class Commander:
@@ -15,8 +16,7 @@ class Commander:
 
 
     def start(self, board, training_settings, logging_settings, console_settings, agent_save_path):
-        game = board
-        self.set_new_agent(game)
+        self.set_new_agent(board)
 
         learning_rate = training_settings[4]
         discount_rate = training_settings[5]
@@ -40,7 +40,7 @@ class Commander:
                 self.show_options("program", self.get_program_options(), console_settings, indent, new_line)
 
             elif action == "new":
-                self.set_new_agent(game)
+                self.set_new_agent(board)
                 print(answer + "New agent has been recruited!" + 2 * new_line)
 
             elif action == "agents":
@@ -104,8 +104,8 @@ class Commander:
                         self.close_program(indent, new_line)
 
                 if not(self.game_over):
-                    state = game.reset()
-                    print(2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(game.getBoard(), indent))
+                    state = board.reset()
+                    print(2 * new_line + indent + "******* GAME STARTED *******" + 2 * new_line + self.print_board(board.getBoard(), indent))
 
                 while not(self.game_over):
                     action = input(question + "How do you want to play this?" + options)
@@ -123,7 +123,7 @@ class Commander:
                         print(answer + "Agent will not learn from further moves." + 2 * new_line)
                     
                     elif action == "state":
-                        print(answer + "Current state: " + str(game.getState()) + 2 * new_line)
+                        print(answer + "Current state: " + str(board.getState()) + 2 * new_line)
 
                     elif action == "tip":
                         pos_values, _ = self.get_highest_values(self.q_table, state)
@@ -142,13 +142,13 @@ class Commander:
                         print(answer + "Reward and state will NOT be printed." + 2 * new_line)
 
                     elif "check" in action:
-                        print(self.check_move(game, action, answer, indent, new_line))
+                        print(self.check_move(board, action, answer, indent, new_line))
 
                     elif action == "cheat":
-                        print(answer + "The valid moves are: " + self.get_valid_moves(game) + 2 * new_line)
+                        print(answer + "The valid moves are: " + self.get_valid_moves(board) + 2 * new_line)
 
                     elif action == "board":
-                        print(self.print_board(game.getBoard(), indent))
+                        print(self.print_board(board.getBoard(), indent))
 
                     elif action == "stop":
                         print(indent + self.stop_playing() + 2 * new_line)
@@ -163,8 +163,8 @@ class Commander:
                     if action.isdigit():
                         action = int(action)
 
-                        if action <= game.action_space():
-                            new_state, reward, self.game_over, info = game.step(action)
+                        if action <= board.action_space():
+                            new_state, reward, self.game_over, info = board.step(action)
 
                             if advised_learning_enabled:    # Update Q-table
                                 self.q_table[state, action] = self.q_table[state, action] * (1 - learning_rate) + \
@@ -175,7 +175,7 @@ class Commander:
 
                             state = new_state       # Set new state
                             
-                            print(self.print_board(game.getBoard(), indent))
+                            print(self.print_board(board.getBoard(), indent))
                             print(indent + self.move_message(info))
 
 
@@ -205,8 +205,8 @@ class Commander:
         print(new_line)
 
 
-    def set_new_agent(self, game):
-        self.q_table = np.zeros((game.state_space(), game.action_space()), dtype=np.float32)
+    def set_new_agent(self, board):
+        self.q_table = np.zeros((board.state_space(), board.action_space()), dtype=np.float32)
         
 
     def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
@@ -248,27 +248,24 @@ class Commander:
 
     def check_qtable_cells(self, indent, new_line):
         q_table_size = 0
-        count_zeros = 0
+        zeros_count = 0
+        time_measurement = timeit.default_timer()
         for state in range(len(self.q_table)):
             q_table_size += len(self.q_table[state,])
             for action in range(len(self.q_table[state,])):
                 if self.q_table[state,action] == 0:
-                    count_zeros += 1
-        filled_cells = q_table_size - count_zeros
+                    zeros_count += 1
+        time_measurement = timeit.default_timer() - time_measurement
+        filled_cells = q_table_size - zeros_count
 
-        print_message = indent + "This represents the agent's knowledge:" + new_line
-        print_message += indent + "Size of Q-Table: " + str(count_zeros) + new_line
-        print_message += indent + "Empty cells: " + str(count_zeros) + " / "
-        print_message += str(count_zeros / q_table_size * 100) + " %" + new_line
+        print_message = indent + "This represents the agent's knowledge:" + 2*new_line
+        print_message += indent + "Size of Q-Table: " + str(q_table_size) + new_line
+        print_message += indent + "Empty cells: " + str(zeros_count) + " / "
+        print_message += str(zeros_count / q_table_size * 100) + " %" + new_line
         print_message += indent + "Filled cells: " + str(filled_cells) + " / "
         print_message += str(filled_cells / q_table_size * 100) + " %" + 2*new_line
+        print_message += indent + "Going through all cells took: " + str(time_measurement) + " seconds" + 2*new_line
         print(print_message)
-        
-        # print_message += indent + "Empty cells: " + str(count_zeros) + new_line
-        # print("Empty cells: ", filled_cells)
-        # print("Filled cells: ", count_zeros)
-        # print("Size of Q-Table: ", q_table_size)
-        # print("Percentage filled: ", str(filled_cells / q_table_size * 100), " %")
 
 
     def view_agents(self, agent_save_path, answer, new_line):
@@ -360,10 +357,10 @@ class Commander:
         return pos_values, highest_value
 
 
-    def get_valid_moves(self, game):
+    def get_valid_moves(self, board):
         valid_moves = []
-        for i in range(self.size + 1, game.action_space()):                        
-            _, _, _, info = game.step(i, False)
+        for i in range(self.size + 1, board.action_space()):                        
+            _, _, _, info = board.step(i, False)
             if info[0] == True:
                 valid_moves.append(i)
         
@@ -375,14 +372,14 @@ class Commander:
         return moves_as_string
 
 
-    def check_move(self, game, action, answer, indent, new_line):
+    def check_move(self, board, action, answer, indent, new_line):
         action = [int(word) for word in action.split() if word.isdigit()]    # Thx to Srikar Appalaraju: https://stackoverflow.com/questions/16009861/get-digits-from-string
         if len(action) == 0:
             action = self.no_digits_found(answer, new_line)
         else:
             action = action[0]
-            if action <= game.action_space():
-                _, _, _, info = game.step(action, False)
+            if action <= board.action_space():
+                _, _, _, info = board.step(action, False)
                 if info[0] == False:
                     action = "--- This move would be INVALED ---"
                 else:
@@ -444,9 +441,9 @@ class Commander:
     
     def print_program_started(self, new_line):
         print(2*new_line)
-        print("                  *************************************************" + new_line)
-        print("                  ****** WELCOME TO MY REINFORCEMENT PROJECT ******" + new_line)
-        print("                  *************************************************" + 2*new_line)
+        print("                  **********************************************************" + new_line)
+        print("                  ****** WELCOME TO MY REINFORCEMENT LEARNING PROJECT ******" + new_line)
+        print("                  **********************************************************" + 2*new_line)
 
 
     def get_program_options(self):
