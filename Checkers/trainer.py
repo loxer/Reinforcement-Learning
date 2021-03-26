@@ -41,6 +41,10 @@ class Trainer:
         print("\n\nTraining started at: " + startingTime + "\n\n")
         timeMeasurement = timeit.default_timer()
 
+
+
+        # <------------ MOST PART STARTING FROM HERE IS TAKEN FROM: https://deeplizard.com/learn/video/HGeI30uATws ------------>
+
         # Q-learning algorithm
         for episode in range(num_episodes):
             state = board.reset()
@@ -99,6 +103,10 @@ class Trainer:
             milestones_all_episodes.append(milestones_current_episodes)
 
 
+        # <------------------------------------------------- UNTIL HERE ------------------------------------------------->
+
+
+
         # Preparing statistics for log
         timeMeasurement = timeit.default_timer() - timeMeasurement
         total_valid_steps = sum(valid_steps_all_episodes)
@@ -126,7 +134,7 @@ class Trainer:
         self.q_table = q_table
 
 
-    def getAgent(self):
+    def get_agent(self):
         return self.q_table
 
 

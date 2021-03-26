@@ -22,7 +22,7 @@ reward_won = 1
 reward_lost = -1
 
 # Logging Settings
-log_notes = "learning_rate / discount_rate"
+log_notes = ""
 statistics_separation_counter = int(num_episodes_per_training / 10)
 create_log_file = True
 

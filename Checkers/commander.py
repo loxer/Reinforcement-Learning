@@ -166,6 +166,7 @@ class Commander:
                         if action <= board.action_space():
                             new_state, reward, self.game_over, info = board.step(action)
 
+                            # <----- MOST PART STARTING FROM HERE IS TAKEN FROM: https://deeplizard.com/learn/video/HGeI30uATws ----->
                             if advised_learning_enabled:    # Update Q-table
                                 self.q_table[state, action] = self.q_table[state, action] * (1 - learning_rate) + \
                                 learning_rate * (reward + discount_rate * np.max(self.q_table[new_state, :]))
@@ -174,6 +175,7 @@ class Commander:
                                 print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
 
                             state = new_state       # Set new state
+                            # <-------------------------------------------- UNTIL HERE -------------------------------------------->
                             
                             print(self.print_board(board.getBoard(), indent))
                             print(indent + self.move_message(info))
@@ -214,7 +216,7 @@ class Commander:
         for training_episode in range(num_episodes):
             trainer = Trainer()
             trainer.run(board, training_settings, logging_settings, str(training_episode + 1), q_table)
-            self.agents.append(trainer.getAgent())
+            self.agents.append(trainer.get_agent())
             self.agents_data.append(trainer.get_logging_data())        
 
 
