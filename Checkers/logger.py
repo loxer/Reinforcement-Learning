@@ -117,7 +117,7 @@ class Logger:
         infoSeparator = " || "
 
         logMessage = "******************************************** " + "REINFORCEMENT LEARNING AI LOGBOOK" + " ********************************************" + newLine
-        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Training Episode: " + current_training_episode + "/" + num_trainings + newLine
+        logMessage += startingTime + infoSeparator + "Version: " + str(version) + infoSeparator +  "Training Episode: " + str(current_training_episode) + "/" + str(num_trainings) + newLine
 
 
         if notes:

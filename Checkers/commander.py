@@ -15,11 +15,8 @@ class Commander:
         self.game_over = False
 
 
-    def start(self, board, training_settings, logging_settings, console_settings, agent_save_path):
+    def start(self, board, trainer, console_settings, agent_save_path):
         self.set_new_agent(board)
-
-        learning_rate = training_settings[4]
-        discount_rate = training_settings[5]
 
         advised_learning_enabled = False
         print_advised_learning_results = False
@@ -50,11 +47,11 @@ class Commander:
                 self.check_qtable_cells(indent, new_line)
 
             elif action == "train new":
-                self.train_new_agents(board, training_settings, logging_settings)
+                self.start_training(board, trainer)
                 self.show_results(indent, answer, new_line)
 
             elif action == "train current":
-                self.train_new_agents(board, training_settings, logging_settings, self.q_table)
+                self.start_training(board, trainer, self.q_table)
                 self.show_results(indent, answer, new_line)
 
             elif action == "results":
@@ -168,8 +165,7 @@ class Commander:
 
                             # <----- MOST PART STARTING FROM HERE IS TAKEN FROM: https://deeplizard.com/learn/video/HGeI30uATws ----->
                             if advised_learning_enabled:    # Update Q-table
-                                self.q_table[state, action] = self.q_table[state, action] * (1 - learning_rate) + \
-                                learning_rate * (reward + discount_rate * np.max(self.q_table[new_state, :]))
+                                self.q_table = trainer.q_learning_algorithm(self.q_table, state, new_state, action, reward)
 
                             if print_advised_learning_results:
                                 print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
@@ -211,13 +207,12 @@ class Commander:
         self.q_table = np.zeros((board.state_space(), board.action_space()), dtype=np.float32)
         
 
-    def train_new_agents(self, board, training_settings, logging_settings, q_table = False):
-        num_episodes = training_settings[1]
-        for training_episode in range(num_episodes):
-            trainer = Trainer()
-            trainer.run(board, training_settings, logging_settings, str(training_episode + 1), q_table)
-            self.agents.append(trainer.get_agent())
-            self.agents_data.append(trainer.get_logging_data())        
+    def start_training(self, board, trainer, q_table = False):
+        self.agents, self.agents_data = trainer.run(board, q_table)
+        # for training_episode in range(num_episodes):
+        #     trainer.run(board, str(training_episode + 1), q_table)
+        #     self.agents.append(trainer.get_agent())
+        #     self.agents_data.append(trainer.get_logging_data())
 
 
     def show_results(self, indent, answer, new_line):
