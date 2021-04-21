@@ -3,9 +3,9 @@ from trainer import *
 from commander import *
 
 # Training Settings
-board_size = 5
+board_size = 4
 num_trainings = 5
-num_episodes_per_training = 1000
+num_episodes_per_training = 10000
 max_steps_per_episode = 100                # not used in this game, since every step is either an advancement towards the goal or invalid and gaming ending
 
 learning_rate = 0.1
@@ -21,9 +21,9 @@ use_classic_algorithm = True                # updates q_table after every step
 use_advanced_algorithm = False               # updates q_table after every episode backwards for all steps
 
 # Reward Settings
-reward_valid_step = 0.2
+reward_valid_step = 0
 reward_milestone = 1
-reward_won = 100
+reward_won = 1
 reward_lost = -1
 
 # Logging Settings

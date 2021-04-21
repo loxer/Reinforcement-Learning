@@ -17,7 +17,7 @@ class Game:
         self.reward_milestone = reward_settings[1]
         self.reward_won = reward_settings[2]
         self.reward_lost = reward_settings[3]
-        self.VERSION = 2
+        self.VERSION = 3
         self.prepareBoard()
 
 

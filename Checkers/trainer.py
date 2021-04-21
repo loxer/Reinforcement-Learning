@@ -10,6 +10,7 @@ class Trainer:
         self.logging_settings = logging_settings
         self.learning_rate = training_settings[4]
         self.discount_rate = training_settings[5]
+        self.step_memory = []
 
 
     def run(self, board, q_table = False):
@@ -54,7 +55,6 @@ class Trainer:
             for episode in range(num_episodes):
                 state = board.reset()
                 done = False
-                step_memory = []
 
                 rewards_current_episode = 0
                 valid_steps_current_episode = 0
@@ -77,10 +77,8 @@ class Trainer:
                     # Update Q-table
                     if algorithm[0]:
                         q_table = self.q_learning_algorithm(q_table, state, new_state, action, reward)
-                        # q_table[state, action] = q_table[state, action] * (1 - learning_rate) + \
-                        #     learning_rate * (reward + discount_rate * np.max(q_table[new_state, :]))
-                    if algorithm[1]:                    
-                        step_memory.append([state, new_state, action, reward])
+                    if algorithm[1]:
+                        self.save_step(state, new_state, action, reward)
                                 
                     # Save data for statistics
                     rewards_current_episode += reward
@@ -116,14 +114,7 @@ class Trainer:
                 # <----------------------------------------------- UNTIL HERE ----------------------------------------------->
 
                 if algorithm[1]:
-                    for memory in range(len(step_memory)-1,-1,-1):      # just iterate in reverse order through the list
-                        state = step_memory[memory][0]
-                        new_state = step_memory[memory][1]
-                        action = step_memory[memory][2]
-                        reward = step_memory[memory][3]
-                        q_table = self.q_learning_algorithm(q_table, state, new_state, action, reward)
-
-
+                    q_table = self.advanced_algorithm(q_table)                    
 
 
             # Preparing statistics for log
@@ -160,6 +151,22 @@ class Trainer:
         q_table[state, action] = q_table[state, action] * (1 - self.learning_rate) + \
                         self.learning_rate * (reward + self.discount_rate * np.max(q_table[new_state, :]))
         return q_table
+
+
+    def advanced_algorithm(self, q_table):
+        for step in range(len(self.step_memory)-1,-1,-1):      # just iterate in reverse order through the list
+            state = self.step_memory[step][0]
+            new_state = self.step_memory[step][1]
+            action = self.step_memory[step][2]
+            reward = self.step_memory[step][3]
+            q_table = self.q_learning_algorithm(q_table, state, new_state, action, reward)
+        
+        self.step_memory.clear()
+        return q_table
+
+
+    def save_step(self, state, new_state, action, reward):
+        self.step_memory.append([state, new_state, action, reward])
 
 
     def print_training_starter(self, training, num_trainings):

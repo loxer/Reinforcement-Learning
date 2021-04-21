@@ -128,7 +128,7 @@ class Commander:
 
                     elif action == "table":
                             reward = np.argmax(self.q_table[state,:])
-                            print(self.print_q_table(self.q_table, state, indent, answer, new_line))               
+                            print(self.print_q_table(self.q_table, state, indent, answer, new_line))
 
                     elif action == "print on":
                         print_advised_learning_results = True
@@ -162,17 +162,19 @@ class Commander:
 
                         if action <= board.action_space():
                             new_state, reward, self.game_over, info = board.step(action)
-
-                            # <----- MOST PART STARTING FROM HERE IS TAKEN FROM: https://deeplizard.com/learn/video/HGeI30uATws ----->
+                            
                             if advised_learning_enabled:    # Update Q-table
-                                self.q_table = trainer.q_learning_algorithm(self.q_table, state, new_state, action, reward)
+                                # self.q_table = trainer.q_learning_algorithm(self.q_table, state, new_state, action, reward)
+                                trainer.save_step(state, new_state, action, reward)
+
+                            if self.game_over:
+                                self.q_table = trainer.advanced_algorithm(self.q_table)
 
                             if print_advised_learning_results:
                                 print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
 
                             state = new_state       # Set new state
-                            # <-------------------------------------------- UNTIL HERE -------------------------------------------->
-                            
+                                                        
                             print(self.print_board(board.getBoard(), indent))
                             print(indent + self.move_message(info))
 
