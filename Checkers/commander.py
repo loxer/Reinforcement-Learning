@@ -5,18 +5,18 @@ import timeit
 
 
 class Commander:
-    def __init__(self, size):
+    def __init__(self, trainer, size):
+        self.trainer = trainer
         self.size = size
         self.agents = []
         self.agents_data = []
-        self.q_table = 0
         self.program_running = True
         self.user_keeps_playing = False
         self.game_over = False
 
 
-    def start(self, board, trainer, console_settings, agent_save_path):
-        self.set_new_agent(board)
+    def start(self, board, console_settings, agent_save_path):
+        self.trainer.create_new_agent()
 
         advised_learning_enabled = False
         print_advised_learning_results = False
@@ -37,7 +37,7 @@ class Commander:
                 self.show_options("program", self.get_program_options(), console_settings, indent, new_line)
 
             elif action == "new":
-                self.set_new_agent(board)
+                self.trainer.create_new_agent()
                 print(answer + "New agent has been recruited!" + 2 * new_line)
 
             elif action == "agents":
@@ -47,11 +47,11 @@ class Commander:
                 self.check_qtable_cells(indent, new_line)
 
             elif action == "train new":
-                self.start_training(board, trainer)
+                self.start_training(True)
                 self.show_results(indent, answer, new_line)
 
             elif action == "train current":
-                self.start_training(board, trainer, self.q_table)
+                self.start_training()
                 self.show_results(indent, answer, new_line)
 
             elif action == "results":
@@ -70,7 +70,7 @@ class Commander:
                 else:
                     digit = digit[0] - 1
                     if "load" in action:
-                        self.q_table = self.load_agent(agent_save_path, digit, answer, new_line, True)
+                        self.trainer.set_agent(self.load_agent(agent_save_path, digit, answer, new_line, True))
                     elif "save" in action:
                         self.save_agent(agent_save_path, digit, answer, new_line)
                     elif "delete" in action:
@@ -120,15 +120,15 @@ class Commander:
                         print(answer + "Agent will not learn from further moves." + 2 * new_line)
                     
                     elif action == "state":
-                        print(answer + "Current state: " + str(board.getState()) + 2 * new_line)
+                        print(answer + "Current state: " + str(board.get_state()) + 2 * new_line)
 
                     elif action == "tip":
-                        pos_values, _ = self.get_highest_values(self.q_table, state)
+                        pos_values, _ = self.get_highest_values(state)
                         print(answer + "Agent suggests: " + pos_values + 2 * new_line)
 
                     elif action == "table":
-                            reward = np.argmax(self.q_table[state,:])
-                            print(self.print_q_table(self.q_table, state, indent, answer, new_line))
+                            reward = np.argmax(self.trainer.get_agent()[state,:])
+                            print(self.print_q_table(state, indent, answer, new_line))
 
                     elif action == "print on":
                         print_advised_learning_results = True
@@ -154,7 +154,7 @@ class Commander:
                         self.close_program(indent, new_line)
 
                     elif action == "pass":
-                            action = str(np.argmax(self.q_table[state,:]))
+                            action = str(np.argmax(self.trainer.get_agent()[state,:]))
                             print(answer + "Agent's step: " + action + 2 * new_line)
                     
                     if action.isdigit():
@@ -164,11 +164,7 @@ class Commander:
                             new_state, reward, self.game_over, info = board.step(action)
                             
                             if advised_learning_enabled:    # Update Q-table
-                                # self.q_table = trainer.q_learning_algorithm(self.q_table, state, new_state, action, reward)
-                                trainer.save_step(state, new_state, action, reward)
-
-                            if self.game_over:
-                                self.q_table = trainer.advanced_algorithm(self.q_table)
+                                self.trainer.advise_agent(state, new_state, action, reward, self.game_over)                                
 
                             if print_advised_learning_results:
                                 print(answer + "Reward: " + str(reward) + " || State: " + str(state) + new_line)
@@ -205,16 +201,8 @@ class Commander:
         print(new_line)
 
 
-    def set_new_agent(self, board):
-        self.q_table = np.zeros((board.state_space(), board.action_space()), dtype=np.float32)
-        
-
-    def start_training(self, board, trainer, q_table = False):
-        self.agents, self.agents_data = trainer.run(board, q_table)
-        # for training_episode in range(num_episodes):
-        #     trainer.run(board, str(training_episode + 1), q_table)
-        #     self.agents.append(trainer.get_agent())
-        #     self.agents_data.append(trainer.get_logging_data())
+    def start_training(self, train_new_agents = False):
+        self.agents, self.agents_data = self.trainer.run(train_new_agents)
 
 
     def show_results(self, indent, answer, new_line):
@@ -239,20 +227,21 @@ class Commander:
 
     def use_trained_agent(self, digit, answer, new_line):
         if digit >= 0 and digit < len(self.agents):
-            self.q_table = self.agents[digit]
+            self.trainer.set_agent(self.agents[digit])
             print(answer + "Agent " + str(digit + 1) + " is waiting for action!" + 2*new_line)
         else:
             print(answer + "This agent does NOT exist!" + 2*new_line)
 
 
     def check_qtable_cells(self, indent, new_line):
+        q_table = self.trainer.get_agent()
         q_table_size = 0
         zeros_count = 0
-        time_measurement = timeit.default_timer()
-        for state in range(len(self.q_table)):
-            q_table_size += len(self.q_table[state,])
-            for action in range(len(self.q_table[state,])):
-                if self.q_table[state,action] == 0:
+        time_measurement = timeit.default_timer()        
+        for state in range(len(q_table)):
+            q_table_size += len(q_table[state,])
+            for action in range(len(q_table[state,])):
+                if q_table[state,action] == 0:
                     zeros_count += 1
         time_measurement = timeit.default_timer() - time_measurement
         filled_cells = q_table_size - zeros_count
@@ -302,7 +291,7 @@ class Commander:
                 temp_agents.append(self.load_agent(agent_save_path, i, answer, new_line))
 
         if isinstance(digit, bool):
-            temp_agents.append(self.q_table)
+            temp_agents.append(self.trainer.get_agent())
             message += "The currently used agent has been saved as agent " + str(len(temp_agents)) + "."
         elif digit >= 0 and digit < len(self.agents):
             temp_agents.append(self.agents[digit])
@@ -337,9 +326,10 @@ class Commander:
         print(message)
 
 
-    def get_highest_values(self, q_table, state):
+    def get_highest_values(self, state):
+        q_table = self.trainer.get_agent()
         values = []
-        highest_value = float('-inf')
+        highest_value = float('-inf')        
         for i in range(len(q_table[state,:])):
             if q_table[state,i] > highest_value:
                 highest_value = q_table[state,i]
@@ -390,6 +380,7 @@ class Commander:
 
 
     def stop_playing(self):
+        self.trainer.reset_step_memory()
         self.game_over = True
         self.user_keeps_playing = False
         return "------ Match aborted ------"
@@ -409,12 +400,13 @@ class Commander:
         return board_print
 
 
-    def print_q_table(self, q_table, state, indent, answer, new_line):
+    def print_q_table(self, state, indent, answer, new_line):
         q_table_print = answer + "All q_table data at state " + str(state) + ":" + 2*new_line
+        q_table = self.trainer.get_agent()
         for i in range(len(q_table[state,:])):
             q_table_print += indent + str(i) + ".: " + str(q_table[state,i]) + new_line
         
-        pos_values, highest_value = self.get_highest_values(q_table, state)
+        pos_values, highest_value = self.get_highest_values(state)
         q_table_print += new_line + answer + "Highest value is " + str(highest_value) + " and can be found at position(s): " + pos_values + 2*new_line
         return q_table_print
 

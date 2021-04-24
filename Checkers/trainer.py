@@ -5,22 +5,21 @@ import time
 import timeit
 
 class Trainer:
-    def __init__(self, training_settings, logging_settings):
+    def __init__(self, board, training_settings, logging_settings):
+        self.board = board
         self.training_settings = training_settings
         self.logging_settings = logging_settings
         self.learning_rate = training_settings[4]
         self.discount_rate = training_settings[5]
+        self.algorithm = self.training_settings[10]
         self.step_memory = []
 
 
-    def run(self, board, q_table = False):
+    def run(self, train_new_agents):
         board_size = self.training_settings[0]
         num_trainings = self.training_settings[1]
-        algorithm = self.training_settings[10]
         
-        action_space_size = board.action_space()
-        state_space_size = board.state_space()
-
+        
         num_episodes = self.training_settings[2]
         max_steps_per_episode = self.training_settings[3]
 
@@ -29,8 +28,8 @@ class Trainer:
 
 
         for training in range(num_trainings):
-            if isinstance(q_table, bool):
-                q_table = np.zeros((state_space_size, action_space_size), dtype=np.float32)
+            if train_new_agents:
+                self.create_new_agent()
 
             start_exploration_rate = exploration_rate = self.training_settings[6]
             max_exploration_rate = self.training_settings[7]
@@ -53,7 +52,7 @@ class Trainer:
 
             # Q-learning algorithm
             for episode in range(num_episodes):
-                state = board.reset()
+                state = self.board.reset()
                 done = False
 
                 rewards_current_episode = 0
@@ -67,17 +66,17 @@ class Trainer:
                     # Exploration-exploitation trade-off
                     exploration_rate_threshold = random.uniform(0, 1)
                     if exploration_rate_threshold > exploration_rate:
-                        action = np.argmax(q_table[state,:])
+                        action = np.argmax(self.q_table[state,:])
                     else:
-                        action = board.action_space_sample()
+                        action = self.board.action_space_sample()
                         
                     # Take new action
-                    new_state, reward, done, info = board.step(action)
+                    new_state, reward, done, info = self.board.step(action)
 
                     # Update Q-table
-                    if algorithm[0]:
-                        q_table = self.q_learning_algorithm(q_table, state, new_state, action, reward)
-                    if algorithm[1]:
+                    if self.algorithm[0]:
+                        self.q_learning_algorithm(state, new_state, action, reward)
+                    if self.algorithm[1]:
                         self.save_step(state, new_state, action, reward)
                                 
                     # Save data for statistics
@@ -113,8 +112,8 @@ class Trainer:
 
                 # <----------------------------------------------- UNTIL HERE ----------------------------------------------->
 
-                if algorithm[1]:
-                    q_table = self.advanced_algorithm(q_table)                    
+                if self.algorithm[1]:
+                    self.advanced_algorithm()
 
 
             # Preparing statistics for log
@@ -132,41 +131,65 @@ class Trainer:
 
 
             # From here the logging starts
-            gameInformation = board.getLoggingInformation()        
+            gameInformation = self.board.getLoggingInformation()        
             endingTime = time.strftime("%Y-%m-%d_%H-%M-%S", time.gmtime())        
 
-            trainingInformation = [startingTime, action_space_size, state_space_size, q_table, num_episodes, max_steps_per_episode, self.learning_rate, self.discount_rate, 
+            trainingInformation = [startingTime, self.board.action_space(), self.board.state_space(), self.q_table, num_episodes, max_steps_per_episode, self.learning_rate, self.discount_rate, 
                                     exploration_rate, self.training_settings[9], max_exploration_rate, self.training_settings[8], start_exploration_rate, self.logging_settings[0],
                                     statistics, statistics_separation_counter, total_steps, total_valid_steps, timeMeasurement, board_size, training, str(num_trainings), endingTime, self.logging_settings[3]]
             
             self.logger = Logger(gameInformation, trainingInformation)
             self.logger.createLog()
             agents_data.append(self.logger.getData())
-            agents.append(q_table)            
+            agents.append(self.q_table)
 
         return agents, agents_data
         
 
-    def q_learning_algorithm(self, q_table, state, new_state, action, reward):
-        q_table[state, action] = q_table[state, action] * (1 - self.learning_rate) + \
-                        self.learning_rate * (reward + self.discount_rate * np.max(q_table[new_state, :]))
-        return q_table
+    def create_new_agent(self):
+        self.q_table = np.zeros((self.board.state_space(), self.board.action_space()), dtype=np.float32)
 
 
-    def advanced_algorithm(self, q_table):
+    def set_agent(self, q_table):
+        self.q_table = q_table
+
+
+    def get_agent(self):
+        return self.q_table
+
+
+    def save_step(self, state, new_state, action, reward):
+        self.step_memory.append([state, new_state, action, reward])
+
+
+    def reset_step_memory(self):
+        self.step_memory.clear()
+
+
+    def q_learning_algorithm(self, state, new_state, action, reward):
+        self.q_table[state, action] = self.q_table[state, action] * (1 - self.learning_rate) + \
+                        self.learning_rate * (reward + self.discount_rate * np.max(self.q_table[new_state, :]))
+
+
+    def advanced_algorithm(self):
         for step in range(len(self.step_memory)-1,-1,-1):      # just iterate in reverse order through the list
             state = self.step_memory[step][0]
             new_state = self.step_memory[step][1]
             action = self.step_memory[step][2]
             reward = self.step_memory[step][3]
-            q_table = self.q_learning_algorithm(q_table, state, new_state, action, reward)
+            self.q_learning_algorithm(state, new_state, action, reward)
         
-        self.step_memory.clear()
-        return q_table
+        self.reset_step_memory()
 
 
-    def save_step(self, state, new_state, action, reward):
-        self.step_memory.append([state, new_state, action, reward])
+    def advise_agent(self, state, new_state, action, reward, game_over):
+        if self.algorithm[0]:
+            self.q_learning_algorithm(state, new_state, action, reward)
+        if self.algorithm[1]:
+            self.save_step(state, new_state, action, reward)
+            if game_over:
+                self.advanced_algorithm()
+
 
 
     def print_training_starter(self, training, num_trainings):
